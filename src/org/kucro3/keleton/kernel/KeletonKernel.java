@@ -21,7 +21,6 @@ import org.spongepowered.api.event.Event;
 
 import java.util.Arrays;
 
-@APIProvider
 public class KeletonKernel extends DummyModContainer {
     public KeletonKernel() throws Exception
     {
@@ -37,7 +36,8 @@ public class KeletonKernel extends DummyModContainer {
         manager = new KeletonModuleManagerImpl();
         apimanager = new KeletonAPIManagerImpl();
 
-        apimanager.export("kernel", this.getClass());
+        apimanager.export(KernelAPIProvider.class);
+        apimanager.export(KernelAPIManagerProvider.class);
     }
 
     @Override

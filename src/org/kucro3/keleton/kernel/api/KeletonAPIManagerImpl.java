@@ -6,6 +6,7 @@ import org.kucro3.keleton.api.exception.APIExportingException;
 import org.kucro3.keleton.api.exception.APIExportingMetadataNotFoundException;
 import org.kucro3.keleton.api.exception.APIExportingNamespaceDuplicatedException;
 import org.kucro3.keleton.api.exception.APIExportingUnsatisfiedMethodException;
+import org.kucro3.keleton.kernel.KeletonKernel;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,10 +24,13 @@ public class KeletonAPIManagerImpl {
         return namespaces;
     }
 
-    public synchronized void export(String namespace, Class<?> clazz) throws APIExportingException
+    public synchronized void export(Class<?> clazz) throws APIExportingException
     {
-        if(clazz.getAnnotation(APIProvider.class) == null)
+        APIProvider providerInfo;
+        if((providerInfo = clazz.getAnnotation(APIProvider.class)) == null)
             throw new APIExportingMetadataNotFoundException("Annotation not found");
+
+        String namespace = providerInfo.namespace();
 
         KeletonAPINamespaceImpl nsp;
         if(namespaces.get(namespace) != null)
