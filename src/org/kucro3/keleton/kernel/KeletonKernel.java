@@ -6,10 +6,8 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.module.loader.KeletonBootstraper;
-import org.kucro3.keleton.kernel.module.loader.KeletonModuleImpl;
 import org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
@@ -54,7 +52,7 @@ public class KeletonKernel extends DummyModContainer {
     @Subscribe
     public void onDiscoverModule(KeletonLoaderEvent.Discovered event)
     {
-        logger.info("Discovered module: " + event.getModule());
+        logger.info("Discovered module: " + event.getModule().getId());
     }
 
     @Subscribe
