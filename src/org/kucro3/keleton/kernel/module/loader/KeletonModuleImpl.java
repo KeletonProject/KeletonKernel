@@ -57,13 +57,6 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         return state;
     }
 
-    void fence()
-    {
-        synchronized(state) {
-            this.state = State.FENCED;
-        }
-    }
-
     @Override
     public boolean enterFence(FenceEstablisher establisher, FenceObject object)
     {
@@ -178,13 +171,13 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
             seq.getModule(dep).exitFence(Keleton.getKeletonEstablisher(), this);
     }
 
-    void transformed(State to)
+    void transformed(State from, State to)
     {
+        postTransformed(from, to);
         synchronized (state) {
             exitFence(this, this);
             this.state = to;
         }
-        postTransformed(to);
     }
 
     @Override
@@ -236,6 +229,8 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         if(!checkBind() || !checker.get() || !checkConvert(to) || !prepostTransformation(to))
             return Optional.empty();
 
+        State from = this.state;
+
         boolean result;
         while(!(result = enterFence(this, this)) && wait);
 
@@ -262,7 +257,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
             future.exceptionally((e) -> tryRecovery(e, to));
             future.whenComplete((unused, e) -> releaseDependencies());
 
-            return Optional.of(future.thenAccept((unused) -> transformed(to)));
+            return Optional.of(future.thenAccept((unused) -> transformed(from, to)));
         } catch (Exception e) {
             tryRecovery(e, to);
         }
@@ -348,9 +343,9 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         KeletonKernel.postEvent(new StateTransformationEventImpl.Failed(this, this.state, expected, createCause(), e));
     }
 
-    void postTransformed(State to)
+    void postTransformed(State from, State to)
     {
-        KeletonKernel.postEvent(new StateTransformationEventImpl.Transformed(this, this.state, to, createCause()));
+        KeletonKernel.postEvent(new StateTransformationEventImpl.Transformed(this, from, to, createCause()));
     }
 
     void postFailedOnRecovery(Throwable source, State expected, Throwable exception)
