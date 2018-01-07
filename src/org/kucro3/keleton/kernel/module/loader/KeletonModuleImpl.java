@@ -2,13 +2,12 @@ package org.kucro3.keleton.kernel.module.loader;
 
 import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.kernel.KeletonKernel;
-import org.kucro3.keleton.kernel.module.exception.KeletonModuleBadDependencyException;
-import org.kucro3.keleton.kernel.module.exception.KeletonModuleException;
+import org.kucro3.keleton.module.exception.KeletonModuleBadDependencyException;
+import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.cause.Cause;
 
 import java.util.*;

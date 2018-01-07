@@ -1,9 +1,9 @@
 package org.kucro3.keleton.kernel.module.loader;
 
 import org.kucro3.keleton.exception.KeletonException;
-import org.kucro3.keleton.kernel.module.exception.KeletonLoaderException;
-import org.kucro3.keleton.kernel.module.exception.KeletonModuleException;
-import org.kucro3.keleton.kernel.module.exception.KeletonModuleFunctionException;
+import org.kucro3.keleton.module.exception.KeletonLoaderException;
+import org.kucro3.keleton.module.exception.KeletonModuleException;
+import org.kucro3.keleton.module.exception.KeletonModuleFunctionException;
 
 import java.util.*;
 
@@ -94,7 +94,7 @@ public class ModuleSequence {
         return Collections.unmodifiableSet(set);
     }
 
-    List<KeletonModuleImpl> computeSequence() throws org.kucro3.keleton.kernel.module.exception.KeletonLoaderException
+    List<KeletonModuleImpl> computeSequence() throws org.kucro3.keleton.module.exception.KeletonLoaderException
     {
         ModuleSequence subseq = new ModuleSequence(demanders, dependencies, modules);
 

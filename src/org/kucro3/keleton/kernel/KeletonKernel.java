@@ -6,7 +6,9 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.kucro3.keleton.api.APIProvider;
 import org.kucro3.keleton.exception.KeletonException;
+import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.module.loader.KeletonBootstraper;
 import org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
@@ -19,8 +21,9 @@ import org.spongepowered.api.event.Event;
 
 import java.util.Arrays;
 
+@APIProvider
 public class KeletonKernel extends DummyModContainer {
-    public KeletonKernel()
+    public KeletonKernel() throws Exception
     {
         super(new ModMetadata());
 
@@ -32,6 +35,9 @@ public class KeletonKernel extends DummyModContainer {
 
         logger = LoggerFactory.getLogger("keletonkernel");
         manager = new KeletonModuleManagerImpl();
+        apimanager = new KeletonAPIManagerImpl();
+
+        apimanager.export("kernel", this.getClass());
     }
 
     @Override
@@ -72,10 +78,22 @@ public class KeletonKernel extends DummyModContainer {
         Sponge.getEventManager().post(event);
     }
 
-    public static KeletonModuleManagerImpl getModuleManager()
+    public static KeletonModuleManagerImpl getModuleManagerImpl()
     {
         return manager;
     }
+
+    public static KeletonAPIManagerImpl getAPIManagerImpl()
+    {
+        return apimanager;
+    }
+
+    public static Logger getLogger()
+    {
+        return logger;
+    }
+
+    private static KeletonAPIManagerImpl apimanager;
 
     private static KeletonModuleManagerImpl manager;
 

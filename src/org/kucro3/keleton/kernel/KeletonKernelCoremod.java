@@ -9,7 +9,7 @@ public class KeletonKernelCoremod implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass()
     {
-        return new String[0];
+        return new String[] {"org.kucro3.keleton.kernel.KeletonAPIClassTransformer"};
     }
 
     @Override

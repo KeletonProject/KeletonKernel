@@ -1,6 +1,5 @@
 package org.kucro3.keleton.kernel.module.loader;
 
-import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 
@@ -19,7 +18,7 @@ public class KeletonBootstraper {
             return false;
 
         ModuleSequence sequence = new ModuleSequence(ModuleDiscoverer.discover());
-        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManager();
+        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
 
         impl.sequence = sequence;
 
@@ -34,7 +33,7 @@ public class KeletonBootstraper {
         if(!launched)
             return false;
 
-        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManager();
+        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
 
         impl.sequence.disableAll();
         impl.sequence.destroyAll();
