@@ -39,5 +39,5 @@ public class KeletonModuleManagerImpl implements KeletonModuleManager {
         return sequence.getModule(name);
     }
 
-    org.kucro3.keleton.kernel.module.loader.ModuleSequence sequence;
+    ModuleSequence sequence;
 }

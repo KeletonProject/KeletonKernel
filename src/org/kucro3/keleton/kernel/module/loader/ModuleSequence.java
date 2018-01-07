@@ -1,6 +1,9 @@
 package org.kucro3.keleton.kernel.module.loader;
 
 import org.kucro3.keleton.exception.KeletonException;
+import org.kucro3.keleton.kernel.module.exception.KeletonLoaderException;
+import org.kucro3.keleton.kernel.module.exception.KeletonModuleException;
+import org.kucro3.keleton.kernel.module.exception.KeletonModuleFunctionException;
 
 import java.util.*;
 
@@ -17,7 +20,7 @@ public class ModuleSequence {
             impl.callback = this::checkDependedAndRemove;
 
             if(this.modules.put(impl.getId(), impl) != null)
-                throw new org.kucro3.keleton.kernel.module.exception.KeletonLoaderException("Duplicated module: " + impl.getId());
+                throw new KeletonLoaderException("Duplicated module: " + impl.getId());
 
             Set<String> deps = impl.getDependencies();
             this.dependencies.put(impl.getId(), deps);
@@ -45,10 +48,10 @@ public class ModuleSequence {
         this.sequence = null;
     }
 
-    void checkDependedAndRemove(KeletonModuleImpl impl) throws org.kucro3.keleton.kernel.module.exception.KeletonModuleException
+    void checkDependedAndRemove(KeletonModuleImpl impl) throws KeletonModuleException
     {
         if(hasDependencies(impl.getId()))
-            throw new org.kucro3.keleton.kernel.module.exception.KeletonModuleFunctionException("Module \"" + impl.getId() + "\" is in use and cannot be removed safely");
+            throw new KeletonModuleFunctionException("Module \"" + impl.getId() + "\" is in use and cannot be removed safely");
     }
 
     boolean hasDemanders(String id)
@@ -118,9 +121,9 @@ public class ModuleSequence {
                         missing.add(dep);
 
                 if(missing.isEmpty())
-                    throw new org.kucro3.keleton.kernel.module.exception.KeletonLoaderException("Dependency loop detected");
+                    throw new KeletonLoaderException("Dependency loop detected");
                 else
-                    throw new org.kucro3.keleton.kernel.module.exception.KeletonLoaderException("Missing dependencies: " + missing);
+                    throw new KeletonLoaderException("Missing dependencies: " + missing);
             }
 
             last = subseq.modules.size();

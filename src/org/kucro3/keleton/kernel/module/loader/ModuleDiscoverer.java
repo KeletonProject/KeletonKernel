@@ -1,5 +1,6 @@
 package org.kucro3.keleton.kernel.module.loader;
 
+import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
@@ -43,13 +44,13 @@ final class ModuleDiscoverer {
 
                 if (info == null)
                 {
-                    Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.LoaderEventImpl.Ignored(createCause(instance), "Metadata not found", instance));
+                    KeletonKernel.postEvent(new LoaderEventImpl.Ignored(createCause(instance), "Metadata not found", instance));
                     continue;
                 }
             }
 
-            KeletonLoaderEvent.Pre event = new org.kucro3.keleton.kernel.module.loader.LoaderEventImpl.Pre(createCause(instance), info.id(), new HashSet<>(Arrays.asList(info.dependencies())));
-            Sponge.getEventManager().post(event);
+            KeletonLoaderEvent.Pre event = new LoaderEventImpl.Pre(createCause(instance), info.id(), new HashSet<>(Arrays.asList(info.dependencies())));
+            KeletonKernel.postEvent(event);
 
             if(event.isCancelled())
             {
@@ -57,7 +58,7 @@ final class ModuleDiscoverer {
                 if(event.isCancelledWithCause())
                     cause = cause.merge(event.getCancellationCause().get());
 
-                Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.LoaderEventImpl.Cancelled(cause, info.id(), new HashSet<>(Arrays.asList(info.dependencies()))));
+                KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info.id(), new HashSet<>(Arrays.asList(info.dependencies()))));
 
                 continue;
             }
@@ -65,7 +66,7 @@ final class ModuleDiscoverer {
             KeletonModuleImpl module = new KeletonModuleImpl(instance, info);
             discovered.add(module);
 
-            Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.LoaderEventImpl.Discovered(createCause(module), module));
+            KeletonKernel.postEvent(new LoaderEventImpl.Discovered(createCause(module), module));
         }
 
         return Collections.unmodifiableCollection(discovered);
