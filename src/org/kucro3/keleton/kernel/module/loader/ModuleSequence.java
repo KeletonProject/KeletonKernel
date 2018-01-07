@@ -103,10 +103,13 @@ public class ModuleSequence {
         int last = subseq.modules.size();
         while(!subseq.modules.isEmpty())
         {
-            for (Map.Entry<String, KeletonModuleImpl> entry : subseq.modules.entrySet()) {
+            Iterator<Map.Entry<String, KeletonModuleImpl>> iter = subseq.modules.entrySet().iterator();
+            Map.Entry<String, KeletonModuleImpl> entry;
+            while(iter.hasNext()) {
+                entry = iter.next();
                 if (!hasDependencies(entry.getKey())) {
                     result.add(entry.getValue());
-                    subseq.modules.remove(entry.getKey());
+                    iter.remove();
                     if (hasDemanders(entry.getKey()))
                         for (String dmd : demanders.get(entry.getKey()))
                             dependencies.get(dmd).remove(entry.getKey());
