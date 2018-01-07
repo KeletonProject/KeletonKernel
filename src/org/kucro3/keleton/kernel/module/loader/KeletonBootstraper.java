@@ -17,8 +17,8 @@ public class KeletonBootstraper {
         if(launched)
             return false;
 
-        org.kucro3.keleton.kernel.module.loader.ModuleSequence sequence = new org.kucro3.keleton.kernel.module.loader.ModuleSequence(ModuleDiscoverer.discover());
-        org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl impl = (org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl) Keleton.getModuleManager();
+        ModuleSequence sequence = new ModuleSequence(ModuleDiscoverer.discover());
+        KeletonModuleManagerImpl impl = (KeletonModuleManagerImpl) Keleton.getModuleManager();
 
         impl.sequence = sequence;
 
@@ -33,7 +33,7 @@ public class KeletonBootstraper {
         if(!launched)
             return false;
 
-        org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl impl = (org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl) Keleton.getModuleManager();
+        KeletonModuleManagerImpl impl = (KeletonModuleManagerImpl) Keleton.getModuleManager();
 
         impl.sequence.disableAll();
         impl.sequence.destroyAll();

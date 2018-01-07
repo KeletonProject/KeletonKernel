@@ -1,6 +1,7 @@
 package org.kucro3.keleton.kernel.module.loader;
 
 import org.kucro3.keleton.Keleton;
+import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.module.exception.KeletonModuleBadDependencyException;
 import org.kucro3.keleton.kernel.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.KeletonInstance;
@@ -339,33 +340,33 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     void postBadDependency(State expected, KeletonModule bad)
     {
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.BadDependency(this, this.state, expected, createCause(), bad));
+        KeletonKernel.postEvent(new StateTransformationEventImpl.BadDependency(this, this.state, expected, createCause(), bad));
     }
 
     void postExcepted(State expected, Throwable e)
     {
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Failed(this, this.state, expected, createCause(), e));
+        KeletonKernel.postEvent(new StateTransformationEventImpl.Failed(this, this.state, expected, createCause(), e));
     }
 
     void postTransformed(State to)
     {
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Transformed(this, this.state, to, createCause()));
+        KeletonKernel.postEvent(new StateTransformationEventImpl.Transformed(this, this.state, to, createCause()));
     }
 
     void postFailedOnRecovery(Throwable source, State expected, Throwable exception)
     {
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.RecoveryEventImpl.Failed(this, expected, source, createCause(), exception));
+        KeletonKernel.postEvent(new RecoveryEventImpl.Failed(this, expected, source, createCause(), exception));
     }
 
     void postRecovered(Throwable source, State expected, State achieved)
     {
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.RecoveryEventImpl.Recovered(this, expected, source, createCause(), achieved));
+        KeletonKernel.postEvent(new RecoveryEventImpl.Recovered(this, expected, source, createCause(), achieved));
     }
 
     boolean prepostRecovery(Throwable source, State expected)
     {
-        KeletonModuleEvent.Recovery.Pre event = new org.kucro3.keleton.kernel.module.loader.RecoveryEventImpl.Pre(this, expected, source, createCause());
-        Sponge.getEventManager().post(event);
+        KeletonModuleEvent.Recovery.Pre event = new RecoveryEventImpl.Pre(this, expected, source, createCause());
+        KeletonKernel.postEvent(event);
 
         if(event.isCancelled())
         {
@@ -373,7 +374,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
             if(event.isCancelledWithCause())
                 cause = cause.merge(event.getCancellationCause().get());
 
-            Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.RecoveryEventImpl.Cancelled(this, expected, source, cause));
+            KeletonKernel.postEvent(new RecoveryEventImpl.Cancelled(this, expected, source, cause));
             return false;
         }
 
@@ -382,8 +383,8 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     boolean prepostTransformation(State expected)
     {
-        KeletonModuleEvent.StateTransformation.Pre event = new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Pre(this, this.state, expected, createCause());
-        Sponge.getEventManager().post(event);
+        KeletonModuleEvent.StateTransformation.Pre event = new StateTransformationEventImpl.Pre(this, this.state, expected, createCause());
+        KeletonKernel.postEvent(event);
 
         if(event.isCancelled())
         {
@@ -391,7 +392,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
             if(event.isCancelledWithCause())
                 cause = cause.merge(event.getCancellationCause().get());
 
-            Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Cancelled(this, this.state, expected, cause));
+            KeletonKernel.postEvent(new StateTransformationEventImpl.Cancelled(this, this.state, expected, cause));
             return false;
         }
 
@@ -403,7 +404,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         if(!supportDisabling())
         {
             String msg = "Disabing operation not supported";
-            Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Ignored(this, this.state, State.DISABLED, createCause(), msg));
+            KeletonKernel.postEvent(new StateTransformationEventImpl.Ignored(this, this.state, State.DISABLED, createCause(), msg));
             return false;
         }
         return true;
@@ -466,7 +467,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     void stateFailure(State state)
     {
         String msg = "Cannot convert the current state " + this.state.name() + " to " + state.name();
-        Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Ignored(this, this.state, state, createCause(), msg));
+        KeletonKernel.postEvent(new StateTransformationEventImpl.Ignored(this, this.state, state, createCause(), msg));
     }
 
     Cause createCause()
@@ -483,11 +484,11 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     {
         boolean result = isBound();
         if(!result)
-            Sponge.getEventManager().post(new org.kucro3.keleton.kernel.module.loader.StateTransformationEventImpl.Ignored(this, this.state, state, createCause(), "Not binded"));
+            KeletonKernel.postEvent(new StateTransformationEventImpl.Ignored(this, this.state, state, createCause(), "Not binded"));
         return result;
     }
 
-    synchronized void bind(org.kucro3.keleton.kernel.module.loader.ModuleSequence seq) throws KeletonModuleException
+    synchronized void bind(ModuleSequence seq) throws KeletonModuleException
     {
         if(this.seq != null)
             throw new KeletonModuleException("Already binded: " + this.getId());
@@ -508,7 +509,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     DisablingCallback callback;
 
-    org.kucro3.keleton.kernel.module.loader.ModuleSequence seq;
+    ModuleSequence seq;
 
     volatile State fencedState;
 
