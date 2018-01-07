@@ -10,13 +10,13 @@ import java.util.Map;
 @APIProvider(namespace = "kernel-api")
 public class KernelAPIManagerProvider {
     @ExportAPI(name = "GetNamespaces")
-    public Map<String, APIMethodNamespace> GetNamespaces()
+    public static Map<String, APIMethodNamespace> GetNamespaces()
     {
         return (Map) KeletonKernel.getAPIManagerImpl().getNamespaces();
     }
 
     @ExportAPI(name = "ExportAPI")
-    public void ExportAPI(Class<?> apiProvider) throws APIExportingException
+    public static void ExportAPI(Class<?> apiProvider) throws APIExportingException
     {
         KeletonKernel.getAPIManagerImpl().export(apiProvider);
     }

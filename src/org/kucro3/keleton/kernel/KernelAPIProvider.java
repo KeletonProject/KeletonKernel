@@ -8,25 +8,25 @@ import org.kucro3.keleton.module.KeletonModuleManager;
 @APIProvider(namespace = "kernel")
 public class KernelAPIProvider {
     @ExportAPI(name = "GetMajorVersion")
-    public int GetMajorVersion()
+    public static int GetMajorVersion()
     {
         return 1;
     }
 
     @ExportAPI(name = "GetMinorVersion")
-    public int GetMinorVersion()
+    public static int GetMinorVersion()
     {
         return 0;
     }
 
     @ExportAPI(name = "GetModuleManager")
-    public KeletonModuleManager GetModuleManager()
+    public static KeletonModuleManager GetModuleManager()
     {
         return KeletonKernel.getModuleManagerImpl();
     }
 
     @ExportAPI(name = "GetKernelFenceEstablisher")
-    public KeletonModule.FenceEstablisher GetKernelFenceEstablisher()
+    public static KeletonModule.FenceEstablisher GetKernelFenceEstablisher()
     {
         return KERNEL_FENCE_ESTABLISHER;
     }
