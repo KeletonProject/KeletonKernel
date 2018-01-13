@@ -6,7 +6,12 @@ import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class JarUtil {
+public final class JarUtil {
+    private JarUtil()
+    {
+
+    }
+
     public static byte[] readClassFully(JarFile file, JarEntry entry) throws IOException
     {
         InputStream is = file.getInputStream(entry);
@@ -24,6 +29,11 @@ public class JarUtil {
             bos.write(ch);
 
         return bos.toByteArray();
+    }
+
+    public static byte[] readFully(JarFile file, JarEntry entry) throws IOException
+    {
+        return StreamUtil.readFully(file.getInputStream(entry));
     }
 
     private static final int[] MAGICVALUE = {0xCA, 0xFE, 0xBA, 0xBE};

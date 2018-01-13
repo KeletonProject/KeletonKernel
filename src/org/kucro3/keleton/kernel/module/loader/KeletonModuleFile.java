@@ -3,6 +3,7 @@ package org.kucro3.keleton.kernel.module.loader;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.KeletonKernel;
+import org.kucro3.keleton.kernel.io.ClassUtil;
 import org.kucro3.keleton.kernel.io.JarUtil;
 import org.kucro3.keleton.kernel.module.URLUtil;
 import org.kucro3.keleton.module.KeletonInstance;
@@ -27,6 +28,7 @@ public class KeletonModuleFile extends URLStreamHandler {
     {
         this.file = file;
         this.entries = new HashMap<>();
+        this.cached = new HashMap<>();
         this.loader = loader;
     }
 
@@ -43,9 +45,11 @@ public class KeletonModuleFile extends URLStreamHandler {
                     JarEntry entry = eEntry.nextElement();
                     entries.put(entry.getName(), entry);
 
-                    byte[] byts = JarUtil.readClassFully(jarFile, entry);
+                    byte[] byts = JarUtil.readFully(jarFile, entry);
 
-                    if (byts == null)
+                    cached.put(entry.getName(), byts);
+
+                    if (!ClassUtil.checkMagicValue(byts))
                         continue;
 
                     ClassReader cr = new ClassReader(byts);
@@ -150,6 +154,12 @@ public class KeletonModuleFile extends URLStreamHandler {
     @Override
     protected URLConnection openConnection(URL url) throws IOException
     {
+        String file = url.getFile().substring(1);
+        JarEntry entry = entries.get(file);
+
+        if(entry == null)
+            throw new FileNotFoundException(file);
+
         return null;
     }
 
@@ -157,7 +167,87 @@ public class KeletonModuleFile extends URLStreamHandler {
 
     private final Map<String, JarEntry> entries;
 
+    private final Map<String, byte[]> cached;
+
     private final File file;
 
     private final LaunchClassLoader loader;
+
+    class KeletonModuleFileURLConnection extends URLConnection
+    {
+        KeletonModuleFileURLConnection(URL url, String path)
+        {
+            super(url);
+            this.path = path;
+        }
+
+        @Override
+        public void connect() throws IOException
+        {
+            if(connected)
+                throw new IllegalStateException("Already connected");
+
+            byte[] byts;
+            if((byts = cached.get(path)) != null)
+                stream = new Buffered(byts);
+            else try (JarFile jar = new JarFile(file)) {
+                JarEntry entry = entries.get(path);
+                if(entry == null)
+                    throw new IllegalStateException("ghost connection");
+                stream = new Buffered(JarUtil.readFully(jar, entry));
+            }
+
+            connected = true;
+        }
+
+        @Override
+        public InputStream getInputStream()
+        {
+            if(!connected)
+                return null;
+            return stream;
+        }
+
+        @Override
+        public void setDoInput(boolean doInput)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setDoOutput(boolean doOutput)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean getDoOutput()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean getDoInput()
+        {
+            return true;
+        }
+
+        private final String path;
+
+        private ByteArrayInputStream stream;
+
+        private class Buffered extends ByteArrayInputStream
+        {
+            Buffered(byte[] buf)
+            {
+                super(buf);
+            }
+
+            @Override
+            public void close()
+            {
+                connected = false;
+            }
+        }
+    }
 }
