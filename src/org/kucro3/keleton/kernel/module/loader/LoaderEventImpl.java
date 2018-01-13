@@ -113,7 +113,7 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
 
     static class Ignored extends LoaderEventImpl implements KeletonLoaderEvent.Ignored
     {
-        Ignored(Cause cause, String message, Module info)
+        Ignored(Cause cause, Module info, String message)
         {
             super(cause, info);
             this.message = message;

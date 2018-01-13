@@ -1,10 +1,12 @@
 package org.kucro3.keleton.kernel.module.loader;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.io.JarUtil;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.Module;
+import org.kucro3.keleton.module.exception.KeletonLoaderException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -89,18 +91,29 @@ public class KeletonModuleFile {
         try {
             object = clazz.newInstance();
         } catch (Exception e) {
-            KeletonKernel.getLogger().warn("Failed to construct module " + file, e);
+            KeletonKernel.postEvent(new LoaderEventImpl.Failed(
+                    createCause(info),
+                    info,
+                    new KeletonLoaderException("Failed to construct module " + file, e)));
             return Optional.empty();
         }
 
         if(!(object instanceof KeletonInstance))
         {
-            KeletonKernel.getLogger().warn("Module in file " + file + " ");
+            KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
+                    createCause(info),
+                    info,
+                    "Module " + info.id() + " (In file " + file + ") is not an instance of KeletonInstance"));
             return Optional.empty();
         }
+
+        KeletonInstance instance = (KeletonInstance) object;
+        KeletonModuleImpl module = new KeletonModuleImpl(instance, info);
+
+        KeletonKernel.postEvent(new LoaderEventImpl.Discovered(createCause(info), module, info));
+
+        return Optional.of(module);
     }
-
-
 
     public File getFile()
     {
