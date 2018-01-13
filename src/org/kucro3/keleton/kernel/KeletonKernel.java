@@ -6,13 +6,14 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.kucro3.keleton.api.APIProvider;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.module.loader.KeletonBootstraper;
 import org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.klink.Environment;
+import org.kucro3.klink.Klink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
@@ -38,6 +39,10 @@ public class KeletonKernel extends DummyModContainer {
 
         apimanager.export(KernelAPIProvider.class);
         apimanager.export(KernelAPIManagerProvider.class);
+
+        klink = new Klink();
+        bootEnv = klink.createEnv("BOOT");
+        runtimeEnv = klink.createEnv("RUNTIME");
     }
 
     @Override
@@ -67,15 +72,17 @@ public class KeletonKernel extends DummyModContainer {
         logger.info("State of module \"" + event.getModule().getId() + "\" has been transformed from " + event.from().name() + " to " + event.to().name());
     }
 
-    public static void postEvent(Event event)
+    public static <T extends Event> T postEvent(T event)
     {
         eventBus.post(event);
 
         if(event instanceof Cancellable)
             if(((Cancellable) event).isCancelled())
-                return;
+                return event;
 
         Sponge.getEventManager().post(event);
+
+        return event;
     }
 
     public static KeletonModuleManagerImpl getModuleManagerImpl()
@@ -100,4 +107,10 @@ public class KeletonKernel extends DummyModContainer {
     private static EventBus eventBus;
 
     private static Logger logger;
+
+    private static Klink klink;
+
+    private static Environment bootEnv;
+
+    private static Environment runtimeEnv;
 }

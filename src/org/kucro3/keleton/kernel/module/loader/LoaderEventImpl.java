@@ -104,17 +104,10 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
 
     static class Ignored extends LoaderEventImpl implements KeletonLoaderEvent.Ignored
     {
-        Ignored(Cause cause, String message, KeletonInstance instance)
+        Ignored(Cause cause, String message)
         {
             super(cause, null, null);
             this.message = message;
-            this.instance = instance;
-        }
-
-        @Override
-        public KeletonInstance getInstance()
-        {
-            return instance;
         }
 
         @Override
@@ -122,8 +115,6 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
         {
             return message;
         }
-
-        private final KeletonInstance instance;
 
         private final String message;
     }
