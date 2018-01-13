@@ -3,6 +3,8 @@ package org.kucro3.keleton.kernel.module.loader;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 
+import java.io.File;
+
 public class KeletonBootstraper {
     public KeletonBootstraper()
     {
@@ -14,18 +16,17 @@ public class KeletonBootstraper {
 
     public synchronized boolean bootstrap() throws KeletonException
     {
-//        if(launched)
-//            return false;
-//
-//        ModuleSequence sequence = new ModuleSequence(ModuleDiscoverer.discover());
-//        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
-//
-//        impl.sequence = sequence;
-//
-//        sequence.loadAll();
-//        sequence.enableAll();
-//
-//        return true;
+        if(launched)
+            return false;
+
+        ModuleSequence sequence = new ModuleSequence(new KeletonModuleFileScanner(new File("modules\\")).scan());
+        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
+
+        impl.sequence = sequence;
+
+        sequence.loadAll();
+        sequence.enableAll();
+
         return true;
     }
 

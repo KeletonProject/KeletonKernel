@@ -2,6 +2,7 @@ package org.kucro3.keleton.kernel;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
@@ -12,6 +13,7 @@ import org.kucro3.keleton.kernel.module.loader.KeletonBootstraper;
 import org.kucro3.keleton.kernel.module.loader.KeletonModuleManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.keleton.module.event.NotModuleFileDiscoveredEvent;
 import org.kucro3.klink.Environment;
 import org.kucro3.klink.Klink;
 import org.slf4j.Logger;
@@ -83,6 +85,11 @@ public class KeletonKernel extends DummyModContainer {
         Sponge.getEventManager().post(event);
 
         return event;
+    }
+
+    public static LaunchClassLoader getLaunchClassLoader()
+    {
+        return (LaunchClassLoader) KeletonKernel.class.getClassLoader();
     }
 
     public static KeletonModuleManagerImpl getModuleManagerImpl()

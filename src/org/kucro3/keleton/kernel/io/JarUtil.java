@@ -25,7 +25,7 @@ public final class JarUtil {
             else
                 bos.write(ch);
 
-        while((ch = is.read()) > 0)
+        while((ch = is.read()) != -1)
             bos.write(ch);
 
         return bos.toByteArray();

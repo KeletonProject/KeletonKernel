@@ -14,7 +14,7 @@ public final class StreamUtil {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         int ch;
-        while((ch = is.read()) > 0)
+        while((ch = is.read()) != -1)
             buffer.write(ch);
 
         return buffer.toByteArray();
