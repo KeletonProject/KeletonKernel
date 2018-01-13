@@ -1,5 +1,9 @@
 package org.kucro3.keleton.kernel.module.loader;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.KeletonKernel;
@@ -13,6 +17,8 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.api.event.cause.Cause;
 
 import java.io.*;
@@ -124,7 +130,8 @@ public class KeletonModuleFile extends URLStreamHandler {
 
                 Object object;
                 try {
-                    object = clazz.newInstance();
+                    Injector injector = Guice.createInjector(new KeletonModuleInjection(info));
+                    object = injector.getInstance(clazz);
                 } catch (Exception e) {
                     KeletonKernel.postEvent(new LoaderEventImpl.Failed(
                             createCause(info),
@@ -178,7 +185,7 @@ public class KeletonModuleFile extends URLStreamHandler {
         if(entry == null)
             throw new FileNotFoundException(file);
 
-        return null;
+        return new KeletonModuleFileURLConnection(url, file);
     }
 
     private static final String DESCRIPTOR_ANNOTATION_MODULE = Type.getDescriptor(Module.class);
@@ -191,6 +198,27 @@ public class KeletonModuleFile extends URLStreamHandler {
 
     private final LaunchClassLoader loader;
 
+    public static class KeletonModuleInjection extends AbstractModule
+    {
+        public KeletonModuleInjection(Module info)
+        {
+            this.info = info;
+        }
+
+        @Override
+        protected void configure()
+        {
+        }
+
+        @Provides
+        public Logger provideLogger()
+        {
+            return LoggerFactory.getLogger(info.id());
+        }
+
+        private final Module info;
+    }
+
     class KeletonModuleFileURLConnection extends URLConnection
     {
         KeletonModuleFileURLConnection(URL url, String path)
@@ -200,30 +228,23 @@ public class KeletonModuleFile extends URLStreamHandler {
         }
 
         @Override
-        public void connect() throws IOException
+        public void connect()
         {
-            if(connected)
-                throw new IllegalStateException("Already connected");
+            this.connected = true;
+        }
 
+        @Override
+        public InputStream getInputStream() throws IOException
+        {
             byte[] byts;
             if((byts = cached.get(path)) != null)
-                stream = new Buffered(byts);
+                return new Buffered(byts);
             else try (JarFile jar = new JarFile(file)) {
                 JarEntry entry = entries.get(path);
                 if(entry == null)
                     throw new IllegalStateException("ghost connection");
-                stream = new Buffered(JarUtil.readFully(jar, entry));
+                return new Buffered(JarUtil.readFully(jar, entry));
             }
-
-            connected = true;
-        }
-
-        @Override
-        public InputStream getInputStream()
-        {
-            if(!connected)
-                return null;
-            return stream;
         }
 
         @Override
@@ -252,19 +273,11 @@ public class KeletonModuleFile extends URLStreamHandler {
 
         private final String path;
 
-        private ByteArrayInputStream stream;
-
         private class Buffered extends ByteArrayInputStream
         {
             Buffered(byte[] buf)
             {
                 super(buf);
-            }
-
-            @Override
-            public void close()
-            {
-                connected = false;
             }
         }
     }

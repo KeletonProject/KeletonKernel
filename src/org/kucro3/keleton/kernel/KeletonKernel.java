@@ -69,6 +69,16 @@ public class KeletonKernel extends DummyModContainer {
     }
 
     @Subscribe
+    public void onModuleFailure(KeletonLoaderEvent.Failed event)
+    {
+        String message = "Failed to load module: " + event.getInfo().id();
+        if(event.getException().isPresent())
+            logger.error(message, event.getException().get());
+        else
+            logger.error(message);
+    }
+
+    @Subscribe
     public void onStateChange(KeletonModuleEvent.StateTransformation.Transformed event)
     {
         logger.info("State of module \"" + event.getModule().getId() + "\" has been transformed from " + event.from().name() + " to " + event.to().name());
