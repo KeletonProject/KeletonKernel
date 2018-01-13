@@ -1,19 +1,17 @@
 package org.kucro3.keleton.kernel.module.loader;
 
-import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
+import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.spongepowered.api.event.cause.Cause;
 
 import java.util.Optional;
-import java.util.Set;
 
 abstract class LoaderEventImpl implements KeletonLoaderEvent {
-    LoaderEventImpl(Cause cause, String id, Set<String> dependencies)
+    LoaderEventImpl(Cause cause, Module info)
     {
         this.cause = cause;
-        this.id = id;
-        this.dependencies = dependencies;
+        this.info = info;
     }
 
     @Override
@@ -22,27 +20,21 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
         return cause;
     }
 
-    public String getId()
+    @Override
+    public Module getInfo()
     {
-        return id;
+        return info;
     }
 
-    public Set<String> getDependencies()
-    {
-        return dependencies;
-    }
-
-    private final String id;
-
-    private final Set<String> dependencies;
+    private final Module info;
 
     private final Cause cause;
 
     static class Pre extends LoaderEventImpl implements KeletonLoaderEvent.Pre
     {
-        Pre(Cause cause, String id, Set<String> dependencies)
+        Pre(Cause cause, Module info)
         {
-            super(cause, id, dependencies);
+            super(cause, info);
         }
 
         @Override
@@ -79,17 +71,17 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
 
     static class Cancelled extends LoaderEventImpl implements KeletonLoaderEvent.Cancelled
     {
-        Cancelled(Cause cause, String id, Set<String> dependencies)
+        Cancelled(Cause cause, Module info)
         {
-            super(cause, id, dependencies);
+            super(cause, info);
         }
     }
 
     static class Discovered extends LoaderEventImpl implements KeletonLoaderEvent.Discovered
     {
-        Discovered(Cause cause, KeletonModule module)
+        Discovered(Cause cause, KeletonModule module, Module info)
         {
-            super(cause, null, null);
+            super(cause, info);
             this.module = module;
         }
 
@@ -102,11 +94,28 @@ abstract class LoaderEventImpl implements KeletonLoaderEvent {
         private final KeletonModule module;
     }
 
+    static class Failed extends LoaderEventImpl implements KeletonLoaderEvent.Failed
+    {
+        Failed(Cause cause, Module info, Exception exception)
+        {
+            super(cause, info);
+            this.exception = exception;
+        }
+
+        @Override
+        public Optional<Exception> getException()
+        {
+            return Optional.ofNullable(exception);
+        }
+
+        private final Exception exception;
+    }
+
     static class Ignored extends LoaderEventImpl implements KeletonLoaderEvent.Ignored
     {
-        Ignored(Cause cause, String message)
+        Ignored(Cause cause, String message, Module info)
         {
-            super(cause, null, null);
+            super(cause, info);
             this.message = message;
         }
 

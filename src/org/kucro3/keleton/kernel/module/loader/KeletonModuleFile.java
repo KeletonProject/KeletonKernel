@@ -2,12 +2,14 @@ package org.kucro3.keleton.kernel.module.loader;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.kernel.KeletonKernel;
+import org.kucro3.keleton.kernel.io.JarUtil;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.Module;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.api.event.cause.Cause;
 
 import java.io.*;
 import java.util.*;
@@ -35,7 +37,7 @@ public class KeletonModuleFile {
                 JarEntry entry = eEntry.nextElement();
                 entries.put(entry.getName(), entry);
 
-                byte[] byts = readClassFully(jarFile, entry);
+                byte[] byts = JarUtil.readClassFully(jarFile, entry);
 
                 if(byts == null)
                     continue;
@@ -72,6 +74,17 @@ public class KeletonModuleFile {
         if(info == null)
             throw new IllegalStateException("disappeared metadata");
 
+        LoaderEventImpl.Pre pre = KeletonKernel.postEvent(new LoaderEventImpl.Pre(createCause(info), info));
+        if(pre.isCancelled())
+        {
+            Cause cause = createCause(info);
+            if(pre.isCancelledWithCause())
+                cause = cause.merge(pre.getCancellationCause().get());
+
+            KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info));
+            return Optional.empty();
+        }
+
         Object object;
         try {
             object = clazz.newInstance();
@@ -87,31 +100,17 @@ public class KeletonModuleFile {
         }
     }
 
-    private static byte[] readClassFully(JarFile file, JarEntry entry) throws IOException
-    {
-        InputStream is = file.getInputStream(entry);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        // check magic value
-        int ch;
-        for(int i = 0; i < 4; i++)
-            if((ch = is.read()) != MAGICVALUE[i])
-                return null;
-            else
-                bos.write(ch);
-
-        while((ch = is.read()) > 0)
-            bos.write(ch);
-
-        return bos.toByteArray();
-    }
 
     public File getFile()
     {
         return file;
     }
 
-    private static final int[] MAGICVALUE = {0xCA, 0xFE, 0xBA, 0xBE};
+    public static Cause createCause(Module info)
+    {
+        return Cause.source(info).build();
+    }
 
     private static final String DESCRIPTOR_ANNOTATION_MODULE = Type.getDescriptor(Module.class);
 
