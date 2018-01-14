@@ -1,13 +1,13 @@
-package org.kucro3.keleton.kernel.module.loader;
+package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.kernel.KeletonKernel;
-import org.kucro3.keleton.module.exception.KeletonModuleBadDependencyException;
-import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.keleton.module.exception.KeletonModuleBadDependencyException;
+import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.spongepowered.api.event.cause.Cause;
 
 import java.util.*;
@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObject, KeletonModule.FenceEstablisher {
-    KeletonModuleImpl(KeletonInstance instance, Module info)
+    public KeletonModuleImpl(KeletonInstance instance, Module info)
     {
         this.instance = instance;
         this.info = info;

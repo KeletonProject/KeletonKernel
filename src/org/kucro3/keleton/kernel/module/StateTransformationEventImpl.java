@@ -1,4 +1,4 @@
-package org.kucro3.keleton.kernel.module.loader;
+package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
@@ -40,7 +40,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         return cause;
     }
 
-    static class Ignored extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.Ignored
+    static class Ignored extends StateTransformationEventImpl implements StateTransformation.Ignored
     {
         Ignored(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause, String info)
         {
@@ -57,7 +57,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         private final String info;
     }
 
-    static class Pre extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.Pre
+    static class Pre extends StateTransformationEventImpl implements StateTransformation.Pre
     {
         Pre(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause)
         {
@@ -96,7 +96,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         private volatile Cause cause;
     }
 
-    static class Cancelled extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.Cancelled
+    static class Cancelled extends StateTransformationEventImpl implements StateTransformation.Cancelled
     {
         Cancelled(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause)
         {
@@ -104,7 +104,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         }
     }
 
-    static class Transformed extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.Transformed
+    static class Transformed extends StateTransformationEventImpl implements StateTransformation.Transformed
     {
         Transformed(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause)
         {
@@ -112,7 +112,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         }
     }
 
-    static class Failed extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.Failed
+    static class Failed extends StateTransformationEventImpl implements StateTransformation.Failed
     {
         Failed(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause, Throwable exception)
         {
@@ -129,7 +129,7 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         private final Throwable exception;
     }
 
-    static class BadDependency extends StateTransformationEventImpl implements KeletonModuleEvent.StateTransformation.BadDependency
+    static class BadDependency extends StateTransformationEventImpl implements StateTransformation.BadDependency
     {
 
         BadDependency(KeletonModule module, KeletonModule.State from, KeletonModule.State to, Cause cause, KeletonModule dep)

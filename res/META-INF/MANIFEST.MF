@@ -1,2 +1,4 @@
 Manifest-Version: 1.0
 FMLCorePlugin: org.kucro3.keleton.kernel.KeletonKernelCoremod
+TweakClass: org.spongepowered.asm.launch.MixinTweaker
+TweakOrder: 0

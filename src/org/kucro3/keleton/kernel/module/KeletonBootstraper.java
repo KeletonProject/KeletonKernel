@@ -1,4 +1,4 @@
-package org.kucro3.keleton.kernel.module.loader;
+package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.KeletonKernel;

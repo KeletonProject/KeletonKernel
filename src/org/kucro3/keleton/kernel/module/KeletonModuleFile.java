@@ -1,4 +1,4 @@
-package org.kucro3.keleton.kernel.module.loader;
+package org.kucro3.keleton.kernel.module;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -9,7 +9,6 @@ import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.io.ClassUtil;
 import org.kucro3.keleton.kernel.io.JarUtil;
-import org.kucro3.keleton.kernel.module.URLUtil;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.exception.KeletonLoaderException;

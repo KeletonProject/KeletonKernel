@@ -1,6 +1,7 @@
-package org.kucro3.keleton.kernel;
+package org.kucro3.keleton.kernel.api;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.api.KeletonAPIMethodHandleImpl;
 import org.kucro3.keleton.kernel.api.KeletonAPINamespaceImpl;
@@ -10,6 +11,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.spongepowered.api.Sponge;
 
 import java.util.*;
 
