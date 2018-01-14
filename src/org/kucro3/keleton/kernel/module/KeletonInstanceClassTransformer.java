@@ -8,16 +8,11 @@ import net.minecraftforge.fml.common.versioning.VersionRange;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.Module;
 import org.objectweb.asm.*;
-import org.objectweb.asm.tree.AnnotationNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 import org.spongepowered.plugin.meta.version.ArtifactVersion;
 
 import java.security.cert.Certificate;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -52,6 +47,15 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
         String version = (String) metadata.get("version");
         String description = (String) metadata.get("description");
         List<String> authors = (List<String>) metadata.get("authors");
+
+        if(name == null)
+            name = id;
+
+        if(version == null)
+            version = "";
+
+        if(authors == null)
+            authors = Collections.emptyList();
 
         // implements ModContainer
         cn.interfaces.add(INTERNAL_NAME_MODCONTAINER);
@@ -90,11 +94,14 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
             // this.metadata = new ModMetadata();
             constructor.visitVarInsn(ALOAD, 0);
             constructor.visitTypeInsn(NEW, INTERNAL_NAME_MODMETADATA);
-            constructor.visitInsn(DUP_X1);
+            constructor.visitInsn(DUP);
+            constructor.visitInsn(DUP);
             constructor.visitMethodInsn(INVOKESPECIAL, INTERNAL_NAME_MODMETADATA, "<init>", "()V", false);
+            constructor.visitVarInsn(ASTORE, 1);
             constructor.visitFieldInsn(PUTFIELD, cn.name, "impl$metadata", DESCRIPTOR_MODMETADATA);
 
             // this.metadata.modId = %id%;
+            constructor.visitVarInsn(ALOAD, 1);
             constructor.visitInsn(DUP);
             constructor.visitLdcInsn(id);
             constructor.visitFieldInsn(PUTFIELD, INTERNAL_NAME_MODMETADATA, "modId", "Ljava/lang/String;");
@@ -109,13 +116,15 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
             constructor.visitLdcInsn(version);
             constructor.visitFieldInsn(PUTFIELD, INTERNAL_NAME_MODMETADATA, "version", "Ljava/lang/String;");
 
-            // this.metadata.description = %description%;
-            constructor.visitInsn(DUP);
-            constructor.visitLdcInsn(description);
-            constructor.visitFieldInsn(PUTFIELD, INTERNAL_NAME_MODMETADATA, "description", "Ljava/lang/String;");
+            if(description != null)
+            {
+                // this.metadata.description = %description%;
+                constructor.visitInsn(DUP);
+                constructor.visitLdcInsn(description);
+                constructor.visitFieldInsn(PUTFIELD, INTERNAL_NAME_MODMETADATA, "description", "Ljava/lang/String;");
+            }
 
             // this.metadata.authorList = Arrays.asList(%authors%);
-            constructor.visitInsn(DUP);
             constructor.visitLdcInsn(authors.size());
             constructor.visitTypeInsn(ANEWARRAY, "java/lang/String");
             for(int i = 0; i < authors.size(); i++)
@@ -129,27 +138,28 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
             constructor.visitFieldInsn(PUTFIELD, INTERNAL_NAME_MODMETADATA, "authorList", "Ljava/util/List;");
 
             // this.initialized = true;
+            constructor.visitVarInsn(ALOAD, 0);
             constructor.visitInsn(ICONST_1);
             constructor.visitFieldInsn(PUTFIELD, cn.name, "gen$initialized", "Z");
 
             constructor.visitLabel(label);
             constructor.visitInsn(RETURN);
 
-            constructor.visitMaxs(0, 0);
             constructor.visitEnd();
         }
 
-        // call initialize();
-        MethodNode call = new MethodNode();
-        {
-            call.visitVarInsn(ALOAD, 0);
-            call.visitMethodInsn(INVOKESPECIAL, cn.name, "gen$initialize", "()V", false);
-        }
+
 
         // insert call
         for(MethodNode mn : (List<MethodNode>) cn.methods)
             if(mn.name.equals("<init>"))
-                mn.instructions.insert(call.instructions);
+            {
+                ListIterator<AbstractInsnNode> iter = mn.instructions.iterator();
+                AbstractInsnNode node;
+                while(iter.hasNext())
+                    if((node = iter.next()).getOpcode() == RETURN)
+                        mn.instructions.insertBefore(node, callInitialize(cn.name));
+            }
 
         // method implementations
         MethodVisitor mv;
@@ -160,7 +170,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 // return;
                 mv.visitInsn(RETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -193,7 +202,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitFieldInsn(GETFIELD, cn.name, "impl$metadata", DESCRIPTOR_MODMETADATA);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -204,7 +212,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitVarInsn(ALOAD, 0);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -229,7 +236,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitLdcInsn("");
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -240,7 +246,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -268,7 +273,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitLabel(label1);
                 mv.visitInsn(IRETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -278,7 +282,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 // return;
                 mv.visitInsn(RETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -289,7 +292,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ICONST_0);
                 mv.visitInsn(IRETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -301,7 +303,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitFieldInsn(GETFIELD, cn.name, "impl$processedVersion", DESCRIPTOR_ARTIFACTVERSION);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -312,7 +313,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ICONST_0);
                 mv.visitInsn(IRETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -330,7 +330,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitMethodInsn(INVOKESTATIC, INTERNAL_NAME_KELETONINSTANCECLASSTRANSFORMER, "getStaticVersionRangeHelper", "()" + DESCRIPTOR_VERSIONRANGE, false);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -341,7 +340,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -359,7 +357,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitFieldInsn(GETSTATIC, INTERNAL_NAME_MODCONTAINER, "EMPTY_PROPERTIES", "Ljava/util/Map;");
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -370,7 +367,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -381,7 +377,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -392,7 +387,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitMethodInsn(INVOKESTATIC, INTERNAL_NAME_KELETONINSTANCECLASSTRANSFORMER, "disableableNever", "()" + DESCRIPTOR_DISABLEABLE, false);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -410,7 +404,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ICONST_1);
                 mv.visitInsn(IRETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -421,7 +414,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
 
@@ -446,15 +438,26 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
                 mv.visitFieldInsn(GETFIELD, cn.name, "impl$classVersion", "I");
                 mv.visitInsn(IRETURN);
 
-                mv.visitMaxs(0, 0);
                 mv.visitEnd();
             }
         }
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cn.accept(cw);
 
         return cw.toByteArray();
+    }
+
+    public static InsnList callInitialize(String owner)
+    {
+        // call initialize();
+        MethodNode call = new MethodNode();
+        {
+            call.visitVarInsn(ALOAD, 0);
+            call.visitMethodInsn(INVOKESPECIAL, owner, "gen$initialize", "()V", false);
+        }
+
+        return call.instructions;
     }
 
     public static VersionRange getStaticVersionRangeHelper()
@@ -472,7 +475,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
         mv.visitMethodInsn(INVOKESTATIC, "java/util/Collections", "emptyList", "()Ljava/util/List;", false);
         mv.visitInsn(ARETURN);
 
-        mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
 
@@ -481,7 +483,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
         mv.visitMethodInsn(INVOKESTATIC, "java/util/Collections", "emptySet", "()Ljava/util/Set;", false);
         mv.visitInsn(ARETURN);
 
-        mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
 
@@ -492,7 +493,6 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
         mv.visitFieldInsn(GETFIELD, INTERNAL_NAME_MODMETADATA, name, descriptor);
         mv.visitInsn(ARETURN);
 
-        mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
 
