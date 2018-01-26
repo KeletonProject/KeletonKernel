@@ -6,6 +6,10 @@ import java.io.OutputStream;
 import java.util.Optional;
 
 public interface EmulatedHandle {
+    public EmulatedHandle[] listHandles();
+
+    public EmulatedHandle[] listHandles(HandleFilter filter);
+
     public boolean makeDirectory();
 
     public boolean isDirectory();
@@ -16,9 +20,20 @@ public interface EmulatedHandle {
 
     public String getPath();
 
-    public Optional<String> getParent();
+    public default Optional<String> getParent()
+    {
+        Optional<EmulatedHandle> optional = getParentHandle();
+        if(optional.isPresent())
+            return Optional.of(optional.get().getPath());
+        return Optional.empty();
+    }
 
     public Optional<EmulatedHandle> getParentHandle();
+
+    public default boolean hasParentHandle()
+    {
+        return getParentHandle().isPresent();
+    }
 
     public boolean canDelete();
 
@@ -34,5 +49,8 @@ public interface EmulatedHandle {
 
     public void create() throws IOException;
 
-    public boolean rename(String name);
+    public static interface HandleFilter
+    {
+        boolean filter(EmulatedHandle handle);
+    }
 }
