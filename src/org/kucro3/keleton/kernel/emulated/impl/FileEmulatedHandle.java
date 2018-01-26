@@ -65,7 +65,10 @@ public class FileEmulatedHandle implements EmulatedHandle {
     @Override
     public Optional<EmulatedHandle> getParentHandle()
     {
-        return Optional.empty();
+        File parent = file.getParentFile();
+        if(parent.equals(root))
+            return Optional.empty();
+        return Optional.of(new FileEmulatedHandle(parent, root, false, false , true));
     }
 
     @Override
@@ -114,14 +117,6 @@ public class FileEmulatedHandle implements EmulatedHandle {
     public void create() throws IOException
     {
         file.createNewFile();
-    }
-
-    public static void main(String[] args)
-    {
-        File root = new File("\\root\\emulated");
-        File file = new File("\\root\\emulated\\0\\mnt\\db.cfg");
-        System.out.println(file.getPath().replaceFirst(root.getPath().replace("\\", "\\\\"), ""));
-        System.out.println(file.getPath());
     }
 
     private final File root;
