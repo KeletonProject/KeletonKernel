@@ -4,6 +4,8 @@ import org.kucro3.keleton.api.APIProvider;
 import org.kucro3.keleton.api.ExportAPI;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.KeletonModuleManager;
+import org.kucro3.klink.Environment;
+import org.kucro3.klink.Klink;
 
 @APIProvider(namespace = "kernel")
 public class KernelAPIProvider {
@@ -29,6 +31,18 @@ public class KernelAPIProvider {
     public static KeletonModule.FenceEstablisher GetKernelFenceEstablisher()
     {
         return KERNEL_FENCE_ESTABLISHER;
+    }
+
+    @ExportAPI(name = "GetKernelKlinkInstance")
+    public static Klink GetKernelKlinkInstance()
+    {
+        return KeletonKernel.klink;
+    }
+
+    @ExportAPI(name = "GetKernelKlinkEnvironment")
+    public static Environment GetKernelKlinkEnvironment()
+    {
+        return KeletonKernel.runtimeEnv;
     }
 
     private static final KeletonModule.FenceEstablisher KERNEL_FENCE_ESTABLISHER = () -> "keletonkernel";

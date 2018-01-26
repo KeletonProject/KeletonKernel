@@ -5,7 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.kucro3.keleton.exception.KeletonException;
@@ -125,9 +124,9 @@ public class KeletonKernel extends DummyModContainer {
 
     private static Logger logger;
 
-    private static Klink klink;
+    public static Klink klink;
 
     private static Environment bootEnv;
 
-    private static Environment runtimeEnv;
+    public static Environment runtimeEnv;
 }
