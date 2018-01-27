@@ -41,7 +41,7 @@ public class TriggerContext {
         return values.containsKey(name);
     }
 
-    public <T> Optional<T> first(Class<?> type)
+    public <T> Optional<T> first(Class<T> type)
     {
         for(Map.Entry<String, Object> entry : values.entrySet())
             if(type.isInstance(entry.getValue()))
@@ -49,7 +49,7 @@ public class TriggerContext {
         return Optional.empty();
     }
 
-    public <T> Optional<T> last(Class<?> type)
+    public <T> Optional<T> last(Class<T> type)
     {
         T value = null;
         for(Map.Entry<String, Object> entry : values.entrySet())

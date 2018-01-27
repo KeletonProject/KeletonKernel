@@ -48,13 +48,13 @@ public class ModuleSequence {
         this.sequence = null;
     }
 
-    void checkDependedAndRemove(KeletonModuleImpl impl) throws KeletonModuleException
+    public void checkDependedAndRemove(KeletonModuleImpl impl) throws KeletonModuleException
     {
         if(hasDependencies(impl.getId()))
             throw new KeletonModuleFunctionException("Module \"" + impl.getId() + "\" is in use and cannot be removed safely");
     }
 
-    boolean hasDemanders(String id)
+    public boolean hasDemanders(String id)
     {
         Set<String> set = demanders.get(id);
 
@@ -64,7 +64,7 @@ public class ModuleSequence {
         return true;
     }
 
-    boolean hasDependencies(String id)
+    public boolean hasDependencies(String id)
     {
         Set<String> set = dependencies.get(id);
 
@@ -74,7 +74,7 @@ public class ModuleSequence {
         return true;
     }
 
-    Set<String> getDepended(String id)
+    public Set<String> getDepended(String id)
     {
         Set<String> set = demanders.get(id);
 
@@ -84,7 +84,7 @@ public class ModuleSequence {
         return Collections.unmodifiableSet(set);
     }
 
-    Set<String> getDependencies(String id)
+    public Set<String> getDependencies(String id)
     {
         Set<String> set = dependencies.get(id);
 
@@ -94,7 +94,7 @@ public class ModuleSequence {
         return Collections.unmodifiableSet(set);
     }
 
-    List<KeletonModuleImpl> computeSequence() throws KeletonLoaderException
+    public List<KeletonModuleImpl> computeSequence() throws KeletonLoaderException
     {
         ModuleSequence subseq = new ModuleSequence(demanders, dependencies, modules);
 
@@ -135,41 +135,41 @@ public class ModuleSequence {
         return result;
     }
 
-    void loadAll()
+    public void loadAll()
     {
         for(KeletonModuleImpl impl : sequence)
             impl.load();
     }
 
-    void enableAll()
+    public void enableAll()
     {
         for(KeletonModuleImpl impl : sequence)
             impl.enable();
     }
 
-    void disableAll()
+    public void disableAll()
     {
         for(int i = sequence.size() - 1; i >= 0; i--)
             sequence.get(i).disable();
     }
 
-    void destroyAll()
+    public void destroyAll()
     {
         for(int i = sequence.size() - 1; i >= 0; i--)
             sequence.get(i).destroy();
     }
 
-    KeletonModuleImpl getModule(String id)
+    public KeletonModuleImpl getModule(String id)
     {
         return modules.get(id);
     }
 
-    boolean hasModule(String id)
+    public boolean hasModule(String id)
     {
         return modules.containsKey(id);
     }
 
-    Map<String, KeletonModuleImpl> getModules()
+    public Map<String, KeletonModuleImpl> getModules()
     {
         return modules;
     }

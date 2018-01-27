@@ -89,8 +89,11 @@ public class EmulatedHandleScanner {
                     if(cn.visibleAnnotations != null)
                         for(AnnotationNode an : (List<AnnotationNode>) cn.visibleAnnotations)
                             classAnnotationCondition.trigger(an, TriggerContext.of(
+                                    Pair.of("eventBus", bus),
                                     Pair.of("emulated", handle),
-                                    Pair.of("buffered", buffered),
+                                    Pair.of("entryName", bufferedEntry.getKey()),
+                                    Pair.of("buffered", bufferedEntry.getValue()),
+                                    Pair.of("resources", buffered),
                                     Pair.of("class", cn),
                                     Pair.of("annotation", an),
                                     Pair.of("event", discoveredEvent),
@@ -105,8 +108,9 @@ public class EmulatedHandleScanner {
                             if(mn.visibleAnnotations != null)
                                 for(AnnotationNode an : (List<AnnotationNode>) mn.visibleAnnotations)
                                     methodAnnotationCondition.trigger(an, TriggerContext.of(
+                                            Pair.of("eventBus", bus),
                                             Pair.of("emulated", handle),
-                                            Pair.of("buffered", buffered),
+                                            Pair.of("resources", buffered),
                                             Pair.of("class", cn),
                                             Pair.of("method", mn),
                                             Pair.of("annotation", an)

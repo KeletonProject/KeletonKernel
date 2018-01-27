@@ -1,6 +1,7 @@
 package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.Keleton;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
@@ -17,8 +18,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObject, KeletonModule.FenceEstablisher {
-    public KeletonModuleImpl(KeletonInstance instance, Module info)
+    public KeletonModuleImpl(EmulatedHandle source, KeletonInstance instance, Module info)
     {
+        this.source = source;
         this.instance = instance;
         this.info = info;
         this.state = State.MOUNTED;
@@ -54,6 +56,12 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     public State getState()
     {
         return state;
+    }
+
+    @Override
+    public EmulatedHandle getSource()
+    {
+        return source;
     }
 
     @Override
@@ -516,6 +524,8 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     private final KeletonInstance instance;
 
     private final Module info;
+
+    private final EmulatedHandle source;
 
     static interface DisablingCallback
     {

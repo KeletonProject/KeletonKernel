@@ -2,9 +2,6 @@ package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.KeletonKernel;
-import org.kucro3.keleton.kernel.loader.KeletonModuleFileScanner;
-
-import java.io.File;
 
 public class KeletonBootstraper {
     public KeletonBootstraper()
