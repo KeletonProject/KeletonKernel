@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
+import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.module.KeletonModuleManagerImpl;
 import org.kucro3.keleton.kernel.module.KeletonBootstraper;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
@@ -40,6 +41,7 @@ public class KeletonKernel extends DummyModContainer {
 
         apimanager.export(KernelAPIProvider.class);
         apimanager.export(KernelAPIManagerProvider.class);
+        apimanager.export(EmulatedAPIProvider.class);
 
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");
