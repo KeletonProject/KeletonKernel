@@ -1,7 +1,7 @@
 package org.kucro3.keleton.kernel.emulated.impl;
 
-import org.kucro3.keleton.kernel.emulated.Emulated;
-import org.kucro3.keleton.kernel.emulated.EmulatedHandle;
+import org.kucro3.keleton.emulated.Emulated;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 
 public class LocalEmulated implements Emulated {
     @Override

@@ -1,9 +1,9 @@
 package org.kucro3.keleton.kernel.emulated.impl;
 
-import java.io.*;
+import org.kucro3.keleton.emulated.Emulated;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 
-import org.kucro3.keleton.kernel.emulated.Emulated;
-import org.kucro3.keleton.kernel.emulated.EmulatedHandle;
+import java.io.*;
 
 public class FileEmulated implements Emulated {
     public FileEmulated(File root, File moduleRoot, File bootFile)

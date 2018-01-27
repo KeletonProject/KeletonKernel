@@ -1,6 +1,6 @@
 package org.kucro3.keleton.kernel.emulated.impl;
 
-import org.kucro3.keleton.kernel.emulated.EmulatedHandle;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 
 import java.io.*;
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class FileEmulatedHandle implements EmulatedHandle {
     }
 
     @Override
-    public EmulatedHandle[] listHandles(HandleFilter filter)
+    public EmulatedHandle[] listHandles(EmulatedHandle.HandleFilter filter)
     {
         return new EmulatedHandle[0];
     }
