@@ -8,6 +8,19 @@ public class TriggerContext {
     {
     }
 
+    public static TriggerContext of()
+    {
+        return new TriggerContext();
+    }
+
+    public static TriggerContext of(Pair... pairs)
+    {
+        TriggerContext context = of();
+        for(Pair pair : pairs)
+            context.set(pair.name, pair.value);
+        return context;
+    }
+
     public <T> Optional<T> put(String name, T value)
     {
         return Optional.ofNullable((T) values.put(name, value));

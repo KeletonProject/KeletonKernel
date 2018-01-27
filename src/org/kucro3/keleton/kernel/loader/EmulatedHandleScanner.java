@@ -40,7 +40,7 @@ public class EmulatedHandleScanner {
         bus.unregister(listener);
     }
 
-
+    
 
     private final EmulatedHandle handle;
 
