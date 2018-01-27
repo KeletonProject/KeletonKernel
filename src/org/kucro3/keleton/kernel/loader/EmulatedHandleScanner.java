@@ -98,7 +98,7 @@ public class EmulatedHandleScanner {
                             ));
 
                     if(discoveredEvent.isCancelled())
-                        continue;
+                        break;
 
                     if(cn.methods != null)
                         for(MethodNode mn : (List<MethodNode>) cn.methods)
@@ -111,10 +111,10 @@ public class EmulatedHandleScanner {
                                             Pair.of("method", mn),
                                             Pair.of("annotation", an)
                                     ));
-
-                    if(!(discoveredEvent.isCancelled() || discoveredEvent.isRegistered()))
-                        launchClassLoader.addURL(handle.toURL());
                 }
+
+                if(!(discoveredEvent.isCancelled() || discoveredEvent.isRegistered()))
+                    launchClassLoader.addURL(handle.toURL());
             }
         } catch (Throwable e) {
             bus.post(new ModuleResourceFailureEvent(handle, e));
