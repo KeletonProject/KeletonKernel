@@ -1,6 +1,7 @@
-package org.kucro3.keleton.kernel.module;
+package org.kucro3.keleton.kernel.loader;
 
 import org.kucro3.keleton.kernel.KeletonKernel;
+import org.kucro3.keleton.kernel.module.KeletonModuleImpl;
 
 import java.io.File;
 import java.util.ArrayList;

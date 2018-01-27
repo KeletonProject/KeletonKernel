@@ -3,6 +3,7 @@ package org.kucro3.keleton.kernel.emulated.impl;
 import org.kucro3.keleton.emulated.EmulatedHandle;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class FileEmulatedHandle implements EmulatedHandle {
@@ -23,13 +24,27 @@ public class FileEmulatedHandle implements EmulatedHandle {
     @Override
     public EmulatedHandle[] listHandles()
     {
-        return new EmulatedHandle[0];
+        return listHandles((unused) -> true);
     }
 
     @Override
     public EmulatedHandle[] listHandles(EmulatedHandle.HandleFilter filter)
     {
-        return new EmulatedHandle[0];
+        if(!isDirectory())
+            return new EmulatedHandle[0];
+
+        File[] files = file.listFiles();
+        ArrayList<EmulatedHandle> handles = new ArrayList<>();
+
+        EmulatedHandle handle;
+        for(File file : files)
+        {
+            handle = new FileEmulatedHandle(file, root, true, true, true);
+            if(filter.filter(handle))
+                handles.add(handle);
+        }
+
+        return handles.toArray(new EmulatedHandle[0]);
     }
 
     @Override

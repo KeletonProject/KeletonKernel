@@ -1,24 +1,10 @@
 package org.kucro3.keleton.kernel.emulated.impl;
 
-import org.kucro3.keleton.emulated.Emulated;
-import org.kucro3.keleton.emulated.EmulatedHandle;
+import java.io.File;
 
-public class LocalEmulated implements Emulated {
-    @Override
-    public EmulatedHandle getHandle(String path)
+public class LocalEmulated extends FileEmulated {
+    public LocalEmulated(File root, File moduleRoot, File bootFile)
     {
-        return null;
-    }
-
-    @Override
-    public EmulatedHandle getModuleDirectory()
-    {
-        return null;
-    }
-
-    @Override
-    public EmulatedHandle getBootFile()
-    {
-        return null;
+        super(root, moduleRoot, bootFile);
     }
 }
