@@ -76,8 +76,7 @@ public class EmulatedHandleScanner {
                 }
 
                 buffered = Collections.unmodifiableMap(buffered);
-                for(Map.Entry<String, byte[]> bufferedEntry : buffered.entrySet())
-                {
+                for(Map.Entry<String, byte[]> bufferedEntry : buffered.entrySet()) try {
                     if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
                         continue;
 
@@ -115,6 +114,8 @@ public class EmulatedHandleScanner {
                                             Pair.of("method", mn),
                                             Pair.of("annotation", an)
                                     ));
+                } catch (Throwable e) {
+                    bus.post(new ModuleResourceFailureEvent(handle, e));
                 }
 
                 if(!(discoveredEvent.isCancelled() || discoveredEvent.isRegistered()))
