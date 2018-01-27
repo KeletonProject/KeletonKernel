@@ -3,6 +3,7 @@ package org.kucro3.keleton.kernel.emulated.impl;
 import org.kucro3.keleton.emulated.EmulatedHandle;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -75,6 +76,12 @@ public class FileEmulatedHandle implements EmulatedHandle {
     public String getPath()
     {
         return file.getPath().replaceFirst(root.getPath().replace("\\", "\\\\"), "");
+    }
+
+    @Override
+    public URL toURL() throws IOException
+    {
+        return file.toURI().toURL();
     }
 
     @Override

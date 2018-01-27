@@ -5,6 +5,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.io.ClassUtil;
@@ -29,11 +30,12 @@ import java.net.URLStreamHandler;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 
 public class KeletonModuleFile extends URLStreamHandler {
-    public KeletonModuleFile(File file, LaunchClassLoader loader)
+    public KeletonModuleFile(EmulatedHandle handle, LaunchClassLoader loader)
     {
-        this.file = file;
+        this.handle = handle;
         this.entries = new HashMap<>();
         this.cached = new HashMap<>();
         this.loader = loader;
@@ -41,135 +43,138 @@ public class KeletonModuleFile extends URLStreamHandler {
 
     public Optional<KeletonModuleImpl> scan()
     {
-        boolean registered = false;
+        // TODO
+//        boolean registered = false;
+////
+////        try {
+////            try {
+////                String discoveredClassName = null;
+////                Map<String, Object> values = new HashMap<>();
+////                try (JarFile jarFile = new JarFile(file)) {
+////                    Enumeration<JarEntry> eEntry = jarFile.entries();
+////                    while (eEntry.hasMoreElements()) {
+////                        JarEntry entry = eEntry.nextElement();
+////
+////                        if(entry.isDirectory())
+////                            continue;
+////
+////                        entries.put(entry.getName(), entry);
+////
+////                        byte[] byts = JarUtil.readFully(jarFile, entry);
+////
+////                        cached.put(entry.getName(), byts);
+////
+////                        if (!ClassUtil.checkMagicValue(byts))
+////                            continue;
+////
+////                        ClassReader cr = new ClassReader(byts);
+////                        ClassNode cn = new ClassNode();
+////
+////                        cr.accept(cn, ClassReader.SKIP_CODE);
+////
+////                        if(cn.visibleAnnotations != null)
+////                            for (AnnotationNode an : (List<AnnotationNode>) cn.visibleAnnotations)
+////                                if (an.desc.equals(DESCRIPTOR_ANNOTATION_MODULE))
+////                                    if (discoveredClassName == null) {
+////                                        discoveredClassName = cn.name;
+////
+////                                        Iterator<Object> iter = an.values.iterator();
+////                                        while (iter.hasNext())
+////                                            values.put((String) iter.next(), iter.next());
+////                                    } else {
+////                                        KeletonKernel.getLogger().warn("Found multiple module class in file " + file, ", IGNORED.");
+////                                        return Optional.empty();
+////                                    }
+////                    }
+////                }
+////
+////                if(discoveredClassName == null)
+////                {
+////                    KeletonKernel.getLogger().warn("Module class not found in file: " + file);
+////                    return Optional.empty();
+////                }
+////
+////                Object id = values.get("id");
+////                if (id == null)
+////                    throw new IllegalStateException("disappeared metadata");
+////
+////                String mid = (String) id;
+////                URL url;
+////                try {
+////                    url = URLUtil.createURL(mid, this);
+////                } catch (Exception e) {
+////                    throw new KeletonInternalException(e);
+////                }
+////
+////                loader.addURL(url);
+////                registered = true;
+////
+////                Class<?> clazz;
+////                try {
+////                    clazz = loader.findClass(discoveredClassName.replace('/', '.'));
+////                } catch (ClassNotFoundException e) {
+////                    NoClassDefFoundError error = new NoClassDefFoundError(discoveredClassName);
+////                    error.initCause(e);
+////                    throw error;
+////                }
+////
+////                Module info = clazz.getAnnotation(Module.class);
+////                if (info == null)
+////                    throw new IllegalStateException("disappeared metadata");
+////
+////                LoaderEventImpl.Pre pre = KeletonKernel.postEvent(new LoaderEventImpl.Pre(createCause(info), info));
+////                if (pre.isCancelled()) {
+////                    Cause cause = createCause(info);
+////                    if (pre.isCancelledWithCause())
+////                        cause = cause.merge(pre.getCancellationCause().get());
+////
+////                    KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info));
+////                    return Optional.empty();
+////                }
+////
+////                Object object;
+////                try {
+////                    Injector injector = Guice.createInjector(new KeletonModuleInjection(info));
+////                    object = injector.getInstance(clazz);
+////                } catch (Exception e) {
+////                    KeletonKernel.postEvent(new LoaderEventImpl.Failed(
+////                            createCause(info),
+////                            info,
+////                            new KeletonLoaderException("Failed to construct module " + file, e)));
+////                    return Optional.empty();
+////                }
+////
+////                if (!(object instanceof KeletonInstance)) {
+////                    KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
+////                            createCause(info),
+////                            info,
+////                            "Module " + info.id() + " (In file " + file + ") is not an instance of KeletonInstance"));
+////                    return Optional.empty();
+////                }
+////
+////                KeletonInstance instance = (KeletonInstance) object;
+////                KeletonModuleImpl module = new KeletonModuleImpl(instance, info);
+////
+////                KeletonKernel.postEvent(new LoaderEventImpl.Discovered(createCause(info), module, info));
+////
+////                return Optional.of(module);
+////            } finally {
+////                if (!registered)
+////                    loader.addURL(file.toURI().toURL());
+////            }
+////        } catch (IOException e) {
+////            return Optional.empty();
+////        } catch (Exception e) {
+////            KeletonKernel.getLogger().error("Exception occurred when scanning module file: " + file, e);
+////            return Optional.empty();
+////        }
 
-        try {
-            try {
-                String discoveredClassName = null;
-                Map<String, Object> values = new HashMap<>();
-                try (JarFile jarFile = new JarFile(file)) {
-                    Enumeration<JarEntry> eEntry = jarFile.entries();
-                    while (eEntry.hasMoreElements()) {
-                        JarEntry entry = eEntry.nextElement();
-
-                        if(entry.isDirectory())
-                            continue;
-
-                        entries.put(entry.getName(), entry);
-
-                        byte[] byts = JarUtil.readFully(jarFile, entry);
-
-                        cached.put(entry.getName(), byts);
-
-                        if (!ClassUtil.checkMagicValue(byts))
-                            continue;
-
-                        ClassReader cr = new ClassReader(byts);
-                        ClassNode cn = new ClassNode();
-
-                        cr.accept(cn, ClassReader.SKIP_CODE);
-
-                        if(cn.visibleAnnotations != null)
-                            for (AnnotationNode an : (List<AnnotationNode>) cn.visibleAnnotations)
-                                if (an.desc.equals(DESCRIPTOR_ANNOTATION_MODULE))
-                                    if (discoveredClassName == null) {
-                                        discoveredClassName = cn.name;
-
-                                        Iterator<Object> iter = an.values.iterator();
-                                        while (iter.hasNext())
-                                            values.put((String) iter.next(), iter.next());
-                                    } else {
-                                        KeletonKernel.getLogger().warn("Found multiple module class in file " + file, ", IGNORED.");
-                                        return Optional.empty();
-                                    }
-                    }
-                }
-
-                if(discoveredClassName == null)
-                {
-                    KeletonKernel.getLogger().warn("Module class not found in file: " + file);
-                    return Optional.empty();
-                }
-
-                Object id = values.get("id");
-                if (id == null)
-                    throw new IllegalStateException("disappeared metadata");
-
-                String mid = (String) id;
-                URL url;
-                try {
-                    url = URLUtil.createURL(mid, this);
-                } catch (Exception e) {
-                    throw new KeletonInternalException(e);
-                }
-
-                loader.addURL(url);
-                registered = true;
-
-                Class<?> clazz;
-                try {
-                    clazz = loader.findClass(discoveredClassName.replace('/', '.'));
-                } catch (ClassNotFoundException e) {
-                    NoClassDefFoundError error = new NoClassDefFoundError(discoveredClassName);
-                    error.initCause(e);
-                    throw error;
-                }
-
-                Module info = clazz.getAnnotation(Module.class);
-                if (info == null)
-                    throw new IllegalStateException("disappeared metadata");
-
-                LoaderEventImpl.Pre pre = KeletonKernel.postEvent(new LoaderEventImpl.Pre(createCause(info), info));
-                if (pre.isCancelled()) {
-                    Cause cause = createCause(info);
-                    if (pre.isCancelledWithCause())
-                        cause = cause.merge(pre.getCancellationCause().get());
-
-                    KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info));
-                    return Optional.empty();
-                }
-
-                Object object;
-                try {
-                    Injector injector = Guice.createInjector(new KeletonModuleInjection(info));
-                    object = injector.getInstance(clazz);
-                } catch (Exception e) {
-                    KeletonKernel.postEvent(new LoaderEventImpl.Failed(
-                            createCause(info),
-                            info,
-                            new KeletonLoaderException("Failed to construct module " + file, e)));
-                    return Optional.empty();
-                }
-
-                if (!(object instanceof KeletonInstance)) {
-                    KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
-                            createCause(info),
-                            info,
-                            "Module " + info.id() + " (In file " + file + ") is not an instance of KeletonInstance"));
-                    return Optional.empty();
-                }
-
-                KeletonInstance instance = (KeletonInstance) object;
-                KeletonModuleImpl module = new KeletonModuleImpl(instance, info);
-
-                KeletonKernel.postEvent(new LoaderEventImpl.Discovered(createCause(info), module, info));
-
-                return Optional.of(module);
-            } finally {
-                if (!registered)
-                    loader.addURL(file.toURI().toURL());
-            }
-        } catch (IOException e) {
-            return Optional.empty();
-        } catch (Exception e) {
-            KeletonKernel.getLogger().error("Exception occurred when scanning module file: " + file, e);
-            return Optional.empty();
-        }
+        return Optional.empty();
     }
 
-    public File getFile()
+    public EmulatedHandle getHandle()
     {
-        return file;
+        return handle;
     }
 
     public static Cause createCause(Module info)
@@ -195,7 +200,7 @@ public class KeletonModuleFile extends URLStreamHandler {
 
     private final Map<String, byte[]> cached;
 
-    private final File file;
+    private final EmulatedHandle handle;
 
     private final LaunchClassLoader loader;
 
@@ -237,15 +242,24 @@ public class KeletonModuleFile extends URLStreamHandler {
         @Override
         public InputStream getInputStream() throws IOException
         {
-            byte[] byts;
-            if((byts = cached.get(path)) != null)
-                return new Buffered(byts);
-            else try (JarFile jar = new JarFile(file)) {
-                JarEntry entry = entries.get(path);
-                if(entry == null)
-                    throw new IllegalStateException("ghost connection");
-                return new Buffered(JarUtil.readFully(jar, entry));
-            }
+            // TODO
+//            byte[] byts;
+//            if((byts = cached.get(path)) != null)
+//                return new Buffered(byts);
+//            else {
+//                InputStream is = handle.openInput().orElse(null);
+//
+//                if(is == null)
+//                    throw new IllegalStateException("emulation failure");
+//
+//                try (JarInputStream jis = new JarInputStream(handle.openInput().get()))
+//                {
+//                    JarEntry entry = entries.get(path);
+//
+//                    return new Buffered(JarUtil.readFully(jar, entry));
+//                }
+//            }
+            return null;
         }
 
         @Override

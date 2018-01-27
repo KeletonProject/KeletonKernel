@@ -1,5 +1,6 @@
 package org.kucro3.keleton.kernel.loader;
 
+import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.module.KeletonModuleImpl;
 
@@ -10,35 +11,35 @@ import java.util.List;
 import java.util.Optional;
 
 public class KeletonModuleFileScanner {
-    public KeletonModuleFileScanner(File dir)
+    public KeletonModuleFileScanner(EmulatedHandle handle)
     {
-        if(!dir.isDirectory())
-            throw new IllegalArgumentException("not a directory: " + dir);
+        if(!handle.isDirectory())
+            throw new IllegalArgumentException("not a directory: " + handle.getPath());
 
-        this.dir = dir;
+        this.emulated = handle;
     }
 
     public Collection<KeletonModuleImpl> scan()
     {
         List<KeletonModuleImpl> list = new ArrayList<>();
 
-        File[] files = dir.listFiles((dir, name) -> name.endsWith(".jar"));
-        Optional<KeletonModuleImpl> optional;
-
-        for(File file : files)
-        {
-            KeletonModuleFile kmf = new KeletonModuleFile(file, KeletonKernel.getLaunchClassLoader());
-            if((optional = kmf.scan()).isPresent())
-                list.add(optional.get());
-        }
+//        EmulatedHandle[] handles = emulated.listHandles((emulatedHandle -> emulatedHandle.getName().endsWith(".jar")));
+//        Optional<KeletonModuleImpl> optional;
+//
+//        for(EmulatedHandle handle : handles)
+//        {
+//            KeletonModuleFile kmf = new KeletonModuleFile(file, KeletonKernel.getLaunchClassLoader());
+//            if((optional = kmf.scan()).isPresent())
+//                list.add(optional.get());
+//        }
 
         return list;
     }
 
-    public File getDirectory()
+    public EmulatedHandle getEmulated()
     {
-        return dir;
+        return emulated;
     }
 
-    private final File dir;
+    private final EmulatedHandle emulated;
 }

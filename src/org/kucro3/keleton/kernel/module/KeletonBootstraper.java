@@ -17,16 +17,17 @@ public class KeletonBootstraper {
 
     public synchronized boolean bootstrap() throws KeletonException
     {
-        if(launched)
-            return false;
-
-        ModuleSequence sequence = new ModuleSequence(new KeletonModuleFileScanner(new File("modules\\")).scan());
-        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
-
-        impl.sequence = sequence;
-
-        sequence.loadAll();
-        sequence.enableAll();
+        // TODO
+//        if(launched)
+//            return false;
+//
+//        ModuleSequence sequence = new ModuleSequence(new KeletonModuleFileScanner(new File("modules\\")).scan());
+//        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
+//
+//        impl.sequence = sequence;
+//
+//        sequence.loadAll();
+//        sequence.enableAll();
 
         return true;
     }
