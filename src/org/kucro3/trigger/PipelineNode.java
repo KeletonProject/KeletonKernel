@@ -1,28 +1,45 @@
 package org.kucro3.trigger;
 
 public final class PipelineNode extends Appendable {
-    PipelineNode(NormalTrigger trigger, PipelineHead head)
+    PipelineNode(NormalTrigger trigger, PipelineHead head, Fence fence)
     {
         this.trigger = trigger;
         this.head = head;
+        this.fence = fence;
+
+        fence.initializeOwner(this);
     }
 
     public PipelineNode then(NormalTrigger trigger)
     {
-        return super.then(trigger, head);
+        return then(trigger, null);
+    }
+
+    public PipelineNode then(NormalTrigger trigger, Fence fence)
+    {
+        return super.then(trigger, head, fence);
     }
 
     public PipelineTerminal then(TerminalTrigger trigger)
     {
-        return super.then(trigger, head);
+        return then(trigger, null);
+    }
+
+    public PipelineTerminal then(TerminalTrigger trigger, Fence fence)
+    {
+        return super.then(trigger, head, fence);
     }
 
     @Override
     void trigger(TriggerContext context)
     {
-        if(trigger.trigger(context))
+        if(fence != null && !fence.isDismantled())
+            fence.fence(context);
+        else if(trigger.trigger(context))
             super.next.trigger(context);
     }
+
+    private final Fence fence;
 
     private final PipelineHead head;
 

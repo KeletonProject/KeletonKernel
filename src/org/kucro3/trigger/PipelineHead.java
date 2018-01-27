@@ -8,12 +8,22 @@ public class PipelineHead extends Appendable {
 
     public PipelineNode then(NormalTrigger trigger)
     {
-        return super.then(trigger, this);
+        return then(trigger, null);
+    }
+
+    public PipelineNode then(NormalTrigger trigger, Fence fence)
+    {
+        return super.then(trigger, this, fence);
     }
 
     public PipelineTerminal then(TerminalTrigger trigger)
     {
-        return super.then(trigger, this);
+        return then(trigger, null);
+    }
+
+    public PipelineTerminal then(TerminalTrigger trigger, Fence fence)
+    {
+        return super.then(trigger, this, fence);
     }
 
     public String getName()

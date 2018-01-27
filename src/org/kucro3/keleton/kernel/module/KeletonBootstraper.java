@@ -4,11 +4,13 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
+import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleDiscoveringTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleLoadCompletionTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleVerifyingTrigger;
 import org.kucro3.keleton.module.Module;
+import org.kucro3.trigger.Fence;
 import org.kucro3.trigger.Pipeline;
 
 public class KeletonBootstraper {
@@ -18,6 +20,21 @@ public class KeletonBootstraper {
             throw new IllegalStateException("Reconstruction");
 
         bootstraper = this;
+    }
+
+    public synchronized boolean initialize() throws KeletonException
+    {
+        if(launched)
+            return false;
+
+        String emulationPolicy = System.getProperty("keleton.kernel.emulation");
+
+        if(emulationPolicy == null || emulationPolicy.equalsIgnoreCase("default"))
+            EmulatedAPIProvider.initialize(new LocalEmulated());
+        else
+            throw new IllegalStateException("Illegal property: keleton.kernel.emulation=" + emulationPolicy);
+
+        return true;
     }
 
     public synchronized boolean bootstrap() throws KeletonException
@@ -44,12 +61,14 @@ public class KeletonBootstraper {
                 (LaunchClassLoader) this.getClass().getClassLoader()
         );
 
+
         ModuleCollection collection = moduleCollection = new ModuleCollection();
+        Fence moduleTriggerFence = new Fence();
         scanner.registerClassAnnotationTriggers(
                 Module.class,
                 Pipeline.of(Module.class.getCanonicalName())
                     .then(new KeletonModuleVerifyingTrigger(collection))
-                    .then(new KeletonModuleDiscoveringTrigger(collection))
+                    .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggerFence)
                     .then(new KeletonModuleLoadCompletionTrigger())
                 .end()
         );

@@ -1,10 +1,11 @@
 package org.kucro3.trigger;
 
 public final class PipelineTerminal extends Triggerable {
-    PipelineTerminal(TerminalTrigger trigger, PipelineHead head)
+    PipelineTerminal(TerminalTrigger trigger, PipelineHead head, Fence fence)
     {
         this.trigger = trigger;
         this.head = head;
+        this.fence = fence;
     }
 
     public Pipeline end()
@@ -15,8 +16,13 @@ public final class PipelineTerminal extends Triggerable {
     @Override
     void trigger(TriggerContext context)
     {
-        trigger.trigger(context);
+        if(fence != null && !fence.isDismantled())
+            fence.fence(context);
+        else
+            trigger.trigger(context);
     }
+
+    private final Fence fence;
 
     private final PipelineHead head;
 

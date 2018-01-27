@@ -9,22 +9,22 @@ abstract class Appendable extends Triggerable {
             throw new IllegalStateException("Already connected");
     }
 
-   PipelineNode then(NormalTrigger trigger, PipelineHead head)
+   PipelineNode then(NormalTrigger trigger, PipelineHead head, Fence fence)
     {
         Objects.requireNonNull(trigger, "trigger");
         check();
 
-        PipelineNode node = new PipelineNode(trigger, head);
+        PipelineNode node = new PipelineNode(trigger, head, fence);
         this.next = node;
         return node;
     }
 
-    PipelineTerminal then(TerminalTrigger trigger, PipelineHead head)
+    PipelineTerminal then(TerminalTrigger trigger, PipelineHead head, Fence fence)
     {
         Objects.requireNonNull(trigger, "trigger");
         check();
 
-        PipelineTerminal terminal = new PipelineTerminal(trigger, head);
+        PipelineTerminal terminal = new PipelineTerminal(trigger, head, fence);
         this.next = terminal;
         return terminal;
     }
