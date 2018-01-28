@@ -61,14 +61,13 @@ public class KeletonBootstraper {
                 (LaunchClassLoader) this.getClass().getClassLoader()
         );
 
-
         ModuleCollection collection = moduleCollection = new ModuleCollection();
-        Fence moduleTriggerFence = new Fence();
+        Fence moduleTriggersFence = this.moduleTriggersFence = new Fence();
         scanner.registerClassAnnotationTriggers(
                 Module.class,
                 Pipeline.of(Module.class.getCanonicalName())
                     .then(new KeletonModuleVerifyingTrigger(collection))
-                    .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggerFence)
+                    .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggersFence)
                     .then(new KeletonModuleLoadCompletionTrigger())
                 .end()
         );
@@ -83,9 +82,9 @@ public class KeletonBootstraper {
         if(!launched)
             return false;
 
-        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
+        moduleTriggersFence.dismantle();
 
-        (impl.sequence = new ModuleSequence(moduleCollection.getModules())).loadAll();
+        (KeletonKernel.getModuleManagerImpl().sequence = new ModuleSequence(moduleCollection.getModules())).loadAll();
 
         return true;
     }
@@ -123,6 +122,8 @@ public class KeletonBootstraper {
     }
 
     private boolean launched;
+
+    private Fence moduleTriggersFence;
 
     private ModuleCollection moduleCollection;
 

@@ -1,6 +1,7 @@
 package org.kucro3.keleton.kernel.loader.module;
 
 import com.google.common.eventbus.EventBus;
+import org.kucro3.keleton.kernel.asm.AnnotationUtil;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceDiscoveredEvent;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceDuplicationEvent;
 import org.kucro3.keleton.kernel.module.ModuleCollection;
@@ -26,10 +27,7 @@ public class KeletonModuleVerifyingTrigger implements NormalTrigger {
         AnnotationNode an = context.first(AnnotationNode.class).get();
         ModuleResourceDiscoveredEvent event = context.first(ModuleResourceDiscoveredEvent.class).get();
 
-        Map<String, Object> values = new HashMap<>();
-        Iterator<Object> iter = an.values.iterator();
-        while(iter.hasNext())
-            values.put((String) iter.next(), iter.next());
+        Map<String, Object> values = AnnotationUtil.values(an);
 
         Object idObject = values.get("id");
         if(idObject == null)
