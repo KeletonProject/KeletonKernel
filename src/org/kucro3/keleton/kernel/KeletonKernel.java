@@ -108,6 +108,21 @@ public class KeletonKernel extends DummyModContainer {
         return manager;
     }
 
+    public static Klink getKlink()
+    {
+        return klink;
+    }
+
+    public static Environment getRuntimeEnv()
+    {
+        return runtimeEnv;
+    }
+
+    public static Environment getBootEnv()
+    {
+        return bootEnv;
+    }
+
     public static KeletonAPIManagerImpl getAPIManagerImpl()
     {
         return apimanager;
@@ -126,9 +141,9 @@ public class KeletonKernel extends DummyModContainer {
 
     private static Logger logger;
 
-    public static Klink klink;
+    private static Klink klink;
 
     private static Environment bootEnv;
 
-    public static Environment runtimeEnv;
+    private static Environment runtimeEnv;
 }

@@ -1,5 +1,6 @@
 package org.kucro3.keleton.kernel.loader.klink;
 
+import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.asm.AnnotationUtil;
 import org.kucro3.keleton.kernel.url.inmemory.InMemoryResources;
 import org.kucro3.klink.expression.ExpressionFunction;
@@ -51,7 +52,7 @@ public class KlinkLibraryConvertingTrigger implements NormalTrigger {
 
             resources.setResource(entryName, converted);
         } catch (Exception e) {
-            return false;
+            throw new KeletonInternalException(e);
         }
 
         return true;

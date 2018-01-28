@@ -6,9 +6,13 @@ import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
+import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryConvertingTrigger;
+import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryPreloadingTrigger;
+import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryRegistryTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleDiscoveringTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleLoadCompletionTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleVerifyingTrigger;
+import org.kucro3.keleton.klink.Library;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.trigger.Fence;
 import org.kucro3.trigger.Pipeline;
@@ -69,6 +73,15 @@ public class KeletonBootstraper {
                     .then(new KeletonModuleVerifyingTrigger(collection))
                     .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggersFence)
                     .then(new KeletonModuleLoadCompletionTrigger())
+                .end()
+        );
+
+        scanner.registerClassAnnotationTriggers(
+                Library.class,
+                Pipeline.of(Pipeline.class.getCanonicalName())
+                    .then(new KlinkLibraryConvertingTrigger())
+                    .then(new KlinkLibraryPreloadingTrigger())
+                    .then(new KlinkLibraryRegistryTrigger(KeletonKernel.getKlink()))
                 .end()
         );
 
