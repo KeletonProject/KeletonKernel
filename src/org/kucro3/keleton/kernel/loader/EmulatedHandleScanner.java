@@ -8,6 +8,8 @@ import org.kucro3.keleton.kernel.io.ClassUtil;
 import org.kucro3.keleton.kernel.io.StreamUtil;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceDiscoveredEvent;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceFailureEvent;
+import org.kucro3.keleton.kernel.url.URLFactory;
+import org.kucro3.keleton.kernel.url.inmemory.InMemoryResources;
 import org.kucro3.trigger.Condition;
 import org.kucro3.trigger.Pair;
 import org.kucro3.trigger.Pipeline;
@@ -61,7 +63,7 @@ public class EmulatedHandleScanner {
                 if(discoveredEvent.isCancelled())
                     continue;
 
-                Map<String, byte[]> buffered = new HashMap<>();
+                InMemoryResources buffered = new InMemoryResources();
                 while((entry = jis.getNextJarEntry()) != null)
                 {
                     if(entry.isDirectory())
@@ -70,15 +72,14 @@ public class EmulatedHandleScanner {
                         continue;
                     }
 
-                    buffered.put(entry.getName(), StreamUtil.readFully(jis));
+                    buffered.setResource(entry.getName(), StreamUtil.readFully(jis));
 
                     jis.closeEntry();
                 }
 
-                // TODO register url
+                launchClassLoader.addURL(URLFactory.inMemoryURL(buffered, handle.getName()));
 
-                buffered = Collections.unmodifiableMap(buffered);
-                for(Map.Entry<String, byte[]> bufferedEntry : buffered.entrySet()) try {
+                for(Map.Entry<String, byte[]> bufferedEntry : buffered.getResources().entrySet()) try {
                     if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
                         continue;
 

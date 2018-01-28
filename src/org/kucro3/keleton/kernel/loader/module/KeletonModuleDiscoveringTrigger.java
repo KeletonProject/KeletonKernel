@@ -32,7 +32,6 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
     public boolean trigger(TriggerContext context)
     {
         try {
-            byte[] byts = context.first(byte[].class).get();
             ClassNode cn = context.first(ClassNode.class).get();
             EmulatedHandle handle = context.first(EmulatedHandle.class).get();
             LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();

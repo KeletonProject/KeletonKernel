@@ -1,6 +1,7 @@
 package org.kucro3.keleton.kernel.loader.klink;
 
 import org.kucro3.keleton.kernel.asm.AnnotationUtil;
+import org.kucro3.keleton.kernel.url.inmemory.InMemoryResources;
 import org.kucro3.klink.expression.ExpressionFunction;
 import org.kucro3.trigger.NormalTrigger;
 import org.kucro3.trigger.TriggerContext;
@@ -21,7 +22,7 @@ public class KlinkLibraryConvertingTrigger implements NormalTrigger {
             ClassNode cn = context.first(ClassNode.class).get();
             AnnotationNode an = context.first(AnnotationNode.class).get();
 
-            Map<String, byte[]> resources = context.<Map<String, byte[]>>get("resources").get();
+            InMemoryResources resources = context.first(InMemoryResources.class).get();
             String entryName = context.<String>get("entryName").get();
 
             Map<String, Object> values = AnnotationUtil.values(an);
@@ -48,7 +49,7 @@ public class KlinkLibraryConvertingTrigger implements NormalTrigger {
             cn.accept(cw);
             byte[] converted = cw.toByteArray();
 
-            resources.put(entryName, converted);
+            resources.setResource(entryName, converted);
         } catch (Exception e) {
             return false;
         }
