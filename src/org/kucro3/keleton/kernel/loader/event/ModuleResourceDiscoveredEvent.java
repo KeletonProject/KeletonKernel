@@ -8,16 +8,6 @@ public class ModuleResourceDiscoveredEvent {
         this.handle = handle;
     }
 
-    public void setRegistered(boolean registered)
-    {
-        this.registered = registered;
-    }
-
-    public boolean isRegistered()
-    {
-        return registered;
-    }
-
     public EmulatedHandle getHandle()
     {
         return handle;
@@ -34,8 +24,6 @@ public class ModuleResourceDiscoveredEvent {
     }
 
     private final EmulatedHandle handle;
-
-    private boolean registered;
 
     private boolean cancelled;
 }

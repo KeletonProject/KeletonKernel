@@ -27,6 +27,20 @@ public class AnnotationUtil {
         return map;
     }
 
+    public static void setValues(AnnotationNode node, Map<String, Object> map)
+    {
+        if(node.values == null)
+            node.values = new ArrayList<>();
+        else
+            node.values.clear();
+
+        for(Map.Entry<String, Object> entry : map.entrySet())
+        {
+            node.values.add(entry.getKey());
+            node.values.add(entry.getValue());
+        }
+    }
+
     public static boolean isAnnotated(ClassNode cn, Class<? extends Annotation> type)
     {
         return getAnnotation(cn, type).isPresent();

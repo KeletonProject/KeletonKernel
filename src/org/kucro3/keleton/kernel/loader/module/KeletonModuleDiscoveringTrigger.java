@@ -39,9 +39,6 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
             ModuleResourceDiscoveredEvent event = context.first(ModuleResourceDiscoveredEvent.class).get();
 
             try {
-                loader.addURL(handle.toURL());
-                event.setRegistered(true);
-
                 Class<?> mainClass = loader.findClass(cn.name.replace("/", "."));
                 Module info = Objects.requireNonNull(mainClass.getAnnotation(Module.class));
 

@@ -75,6 +75,8 @@ public class EmulatedHandleScanner {
                     jis.closeEntry();
                 }
 
+                // TODO register url
+
                 buffered = Collections.unmodifiableMap(buffered);
                 for(Map.Entry<String, byte[]> bufferedEntry : buffered.entrySet()) try {
                     if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
@@ -117,9 +119,6 @@ public class EmulatedHandleScanner {
                 } catch (Throwable e) {
                     bus.post(new ModuleResourceFailureEvent(handle, e));
                 }
-
-                if(!(discoveredEvent.isCancelled() || discoveredEvent.isRegistered()))
-                    launchClassLoader.addURL(handle.toURL());
             }
         } catch (Throwable e) {
             bus.post(new ModuleResourceFailureEvent(handle, e));
