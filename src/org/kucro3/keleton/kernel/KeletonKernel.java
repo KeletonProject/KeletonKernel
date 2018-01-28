@@ -11,7 +11,6 @@ import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.module.KeletonModuleManagerImpl;
-import org.kucro3.keleton.kernel.module.KeletonBootstraper;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
 import org.kucro3.klink.Environment;

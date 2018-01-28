@@ -39,5 +39,5 @@ public class KeletonModuleManagerImpl implements KeletonModuleManager {
         return sequence.getModule(name);
     }
 
-    ModuleSequence sequence;
+    public ModuleSequence sequence;
 }

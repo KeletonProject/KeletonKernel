@@ -1,8 +1,7 @@
-package org.kucro3.keleton.kernel.module;
+package org.kucro3.keleton.kernel;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.exception.KeletonException;
-import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
@@ -12,6 +11,8 @@ import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryRegistryTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleDiscoveringTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleLoadCompletionTrigger;
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleVerifyingTrigger;
+import org.kucro3.keleton.kernel.module.ModuleCollection;
+import org.kucro3.keleton.kernel.module.ModuleSequence;
 import org.kucro3.keleton.klink.Library;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.trigger.Fence;
