@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,8 @@ public class EmulatedHandleScanner {
                     jis.closeEntry();
                 }
 
-                launchClassLoader.addURL(URLFactory.inMemoryURL(buffered, handle.getName()));
+                URL url;
+                launchClassLoader.addURL(url = URLFactory.inMemoryURL(buffered, handle.getName()));
 
                 for(Map.Entry<String, byte[]> bufferedEntry : buffered.getResources().entrySet()) try {
                     if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
@@ -99,7 +101,8 @@ public class EmulatedHandleScanner {
                                     Pair.of("class", cn),
                                     Pair.of("annotation", an),
                                     Pair.of("event", discoveredEvent),
-                                    Pair.of("launchloader", launchClassLoader)
+                                    Pair.of("launchloader", launchClassLoader),
+                                    Pair.of("url", url)
                             ));
 
                     if(discoveredEvent.isCancelled())

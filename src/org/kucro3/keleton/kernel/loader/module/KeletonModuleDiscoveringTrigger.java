@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.event.cause.Cause;
 
+import java.net.URL;
 import java.util.Objects;
 
 public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
@@ -32,6 +33,7 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
     public boolean trigger(TriggerContext context)
     {
         try {
+            URL url = context.first(URL.class).get();
             ClassNode cn = context.first(ClassNode.class).get();
             EmulatedHandle handle = context.first(EmulatedHandle.class).get();
             LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
@@ -86,7 +88,7 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
                 }
 
                 KeletonInstance instance = (KeletonInstance) object;
-                KeletonModuleImpl impl = new KeletonModuleImpl(handle, instance, info);
+                KeletonModuleImpl impl = new KeletonModuleImpl(handle, url, instance, info);
                 collection.addModule(impl);
 
                 context.put("module", impl);

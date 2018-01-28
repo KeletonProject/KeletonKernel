@@ -11,6 +11,8 @@ import org.kucro3.keleton.module.exception.KeletonModuleBadDependencyException;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.spongepowered.api.event.cause.Cause;
 
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,12 +20,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObject, KeletonModule.FenceEstablisher {
-    public KeletonModuleImpl(EmulatedHandle source, KeletonInstance instance, Module info)
+    public KeletonModuleImpl(EmulatedHandle source, URL url, KeletonInstance instance, Module info)
     {
         this.source = source;
         this.instance = instance;
         this.info = info;
         this.state = State.MOUNTED;
+        this.url = url;
 
         this.fenceObjects = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
@@ -62,6 +65,12 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     public EmulatedHandle getSource()
     {
         return source;
+    }
+
+    @Override
+    public URL getResourceURL()
+    {
+        return url;
     }
 
     @Override
@@ -526,6 +535,8 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     private final Module info;
 
     private final EmulatedHandle source;
+
+    private final URL url;
 
     static interface DisablingCallback
     {
