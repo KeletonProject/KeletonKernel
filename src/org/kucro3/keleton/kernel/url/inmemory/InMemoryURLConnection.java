@@ -45,8 +45,8 @@ public class InMemoryURLConnection extends URLConnection {
     @Override
     public InputStream getInputStream() throws IOException
     {
-        return resources.getResourceAsStream(url.getPath())
-                .orElseThrow(() -> new IOException("No such in-memory resource: " + url.getPath()));
+        return resources.getResourceAsStream(url.getPath().substring(1))
+                .orElseThrow(() -> new IOException("No such in-memory resource: " + url.getPath().substring(1)));
     }
 
     private final InMemoryResources resources;

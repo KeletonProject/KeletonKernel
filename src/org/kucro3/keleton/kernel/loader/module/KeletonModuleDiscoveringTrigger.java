@@ -37,7 +37,6 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
             ClassNode cn = context.first(ClassNode.class).get();
             EmulatedHandle handle = context.first(EmulatedHandle.class).get();
             LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
-            ModuleResourceDiscoveredEvent event = context.first(ModuleResourceDiscoveredEvent.class).get();
 
             try {
                 Class<?> mainClass = loader.findClass(cn.name.replace("/", "."));
@@ -68,7 +67,6 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
                             info,
                             "Failed to construct module \"" + info.id() +  "\" of emulated: " + handle.getPath()));
 
-                    event.setCancelled(true);
                     return false;
                 }
 
@@ -83,7 +81,6 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
                                     + "\" but not a instance of KeletonInstance, IGNORED"
                     ));
 
-                    event.setCancelled(true);
                     return false;
                 }
 
@@ -94,11 +91,11 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
                 context.put("module", impl);
                 context.put("info", info);
             } catch (Exception e) {
-                event.setCancelled(true);
-                return false;
+                // TODO unexcepted
+                throw new RuntimeException(e);
             }
         } catch (Exception e) {
-            // unexpected
+            // TODO unexpected
             throw new RuntimeException(e);
         }
 

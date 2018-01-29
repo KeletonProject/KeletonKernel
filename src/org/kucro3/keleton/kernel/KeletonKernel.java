@@ -7,9 +7,11 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
+import org.kucro3.keleton.kernel.loader.event.ModuleResourceFailureEvent;
 import org.kucro3.keleton.kernel.module.KeletonModuleManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
@@ -59,7 +61,12 @@ public class KeletonKernel extends DummyModContainer {
     {
         new KeletonBootstraper();
 
-        KeletonBootstraper.getBootstraper().bootstrap();
+        KeletonBootstraper bootstraper = KeletonBootstraper.getBootstraper();
+
+        bootstraper.initialize();
+        bootstraper.discoverModules();
+        bootstraper.loadModules();
+        bootstraper.enableModules();
     }
 
     @Subscribe
@@ -82,6 +89,12 @@ public class KeletonKernel extends DummyModContainer {
     public void onStateChange(KeletonModuleEvent.StateTransformation.Transformed event)
     {
         logger.info("State of module \"" + event.getModule().getId() + "\" has been transformed from " + event.from().name() + " to " + event.to().name());
+    }
+
+    @Subscribe
+    public void onResourceFailure(ModuleResourceFailureEvent event)
+    {
+        logger.error("Failed to load resource: " + event.getHandle().getPath(), event.getCause());
     }
 
     public static <T extends Event> T postEvent(T event)
@@ -120,6 +133,11 @@ public class KeletonKernel extends DummyModContainer {
     public static Environment getBootEnv()
     {
         return bootEnv;
+    }
+
+    public static EventBus getEventBus()
+    {
+        return eventBus;
     }
 
     public static KeletonAPIManagerImpl getAPIManagerImpl()

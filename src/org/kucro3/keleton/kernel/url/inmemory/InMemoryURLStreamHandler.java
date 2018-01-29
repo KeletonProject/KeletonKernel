@@ -23,5 +23,5 @@ public class InMemoryURLStreamHandler extends URLStreamHandler {
 
     private final InMemoryResources resources;
 
-    public static final String PROTOCOL = "inmemory";
+    public static final String PROTOCOL = "in-memory";
 }

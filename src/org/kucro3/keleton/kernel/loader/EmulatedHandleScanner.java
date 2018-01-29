@@ -25,10 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -54,6 +51,8 @@ public class EmulatedHandleScanner {
     public void scan()
     {
         EmulatedHandle[] handles = handle.listHandles((h) -> h.getPath().endsWith(".jar") && !h.isDirectory());
+        List<InMemoryResources> resourcesList = new ArrayList<>();
+        List<URL> urlList = new ArrayList<>();
 
         for(EmulatedHandle handle : handles) try {
             try(InputStream is = handle.openInput().get()) {
@@ -67,14 +66,12 @@ public class EmulatedHandleScanner {
                 ModuleResourceDiscoveredEvent discoveredEvent = new ModuleResourceDiscoveredEvent(handle);
                 bus.post(discoveredEvent);
 
-                if(discoveredEvent.isCancelled())
+                if (discoveredEvent.isCancelled())
                     continue;
 
                 InMemoryResources buffered = new InMemoryResources();
-                while((entry = jis.getNextJarEntry()) != null)
-                {
-                    if(entry.isDirectory())
-                    {
+                while ((entry = jis.getNextJarEntry()) != null) {
+                    if (entry.isDirectory()) {
                         jis.closeEntry();
                         continue;
                     }
@@ -86,6 +83,17 @@ public class EmulatedHandleScanner {
 
                 URL url;
                 launchClassLoader.addURL(url = URLFactory.inMemoryURL(buffered, handle.getName()));
+
+                urlList.add(url);
+                resourcesList.add(buffered);
+            } catch (Throwable e) {
+                bus.post(new ModuleResourceFailureEvent(handle, e));
+            }
+
+            for(int i = 0; i < resourcesList.size(); i++)
+            {
+                URL url = urlList.get(i);
+                InMemoryResources buffered = resourcesList.get(i);
 
                 for(Map.Entry<String, byte[]> bufferedEntry : buffered.getResources().entrySet()) try {
                     if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
@@ -106,13 +114,9 @@ public class EmulatedHandleScanner {
                                     Pair.of("resources", buffered),
                                     Pair.of("class", cn),
                                     Pair.of("annotation", an),
-                                    Pair.of("event", discoveredEvent),
                                     Pair.of("launchloader", launchClassLoader),
                                     Pair.of("url", url)
                             ));
-
-                    if(discoveredEvent.isCancelled())
-                        break;
 
                     if(cn.methods != null)
                         for(MethodNode mn : (List<MethodNode>) cn.methods)

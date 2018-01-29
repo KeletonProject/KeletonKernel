@@ -25,23 +25,17 @@ public class KeletonModuleVerifyingTrigger implements NormalTrigger {
     {
         EventBus bus = context.first(EventBus.class).get();
         AnnotationNode an = context.first(AnnotationNode.class).get();
-        ModuleResourceDiscoveredEvent event = context.first(ModuleResourceDiscoveredEvent.class).get();
 
         Map<String, Object> values = AnnotationUtil.values(an);
 
         Object idObject = values.get("id");
         if(idObject == null)
-        {
-            event.setCancelled(true);
             return false;
-        }
 
         String id = (String) idObject;
         if(collection.hasModule(id))
         {
             bus.post(new ModuleResourceDuplicationEvent(id));
-
-            event.setCancelled(true);
             return false;
         }
 
