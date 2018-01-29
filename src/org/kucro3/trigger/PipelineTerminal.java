@@ -16,7 +16,7 @@ public final class PipelineTerminal extends Triggerable {
     @Override
     void trigger(TriggerContext context)
     {
-        if(fence != null && !fence.isDismantled())
+        if(fence != null && !fence.dismantling && !fence.isDismantled())
             fence.fence(context);
         else
             trigger.trigger(context);
