@@ -7,7 +7,8 @@ public final class PipelineNode extends Appendable {
         this.head = head;
         this.fence = fence;
 
-        fence.initializeOwner(this);
+        if(fence != null)
+            fence.initializeOwner(this);
     }
 
     public PipelineNode then(NormalTrigger trigger)
