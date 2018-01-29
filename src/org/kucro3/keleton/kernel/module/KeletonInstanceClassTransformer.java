@@ -21,6 +21,9 @@ public class KeletonInstanceClassTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String className, String transformedClassName, byte[] bytes)
     {
+        if(bytes == null)
+            return null;
+
         ClassReader cr = new ClassReader(bytes);
         ClassNode cn = new ClassNode();
 

@@ -22,6 +22,9 @@ public class KeletonAPIClassTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String className, String transformedClassName, byte[] bytes)
     {
+        if(bytes == null)
+            return null;
+
         try {
             ClassNode node = new ClassNode();
             ClassReader reader = new ClassReader(bytes);
@@ -118,7 +121,7 @@ public class KeletonAPIClassTransformer implements IClassTransformer {
             return cw.toByteArray();
         } catch (Throwable e) {
             // TODO further process
-            KeletonKernel.getLogger().error("Exception occurred when transforming class: " + transformedClassName);
+            KeletonKernel.getLogger().error("Exception occurred when transforming class: " + transformedClassName, e);
             throw e;
         }
     }
