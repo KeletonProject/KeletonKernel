@@ -89,53 +89,53 @@ public class EmulatedHandleScanner {
             } catch (Throwable e) {
                 bus.post(new ModuleResourceFailureEvent(handle, e));
             }
-
-            for(int i = 0; i < resourcesList.size(); i++)
-            {
-                URL url = urlList.get(i);
-                InMemoryResources buffered = resourcesList.get(i);
-
-                for(Map.Entry<String, byte[]> bufferedEntry : buffered.getResources().entrySet()) try {
-                    if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
-                        continue;
-
-                    ClassNode cn = new ClassNode();
-                    ClassReader cr = new ClassReader(bufferedEntry.getValue());
-
-                    cr.accept(cn, 0);
-
-                    if(cn.visibleAnnotations != null)
-                        for(AnnotationNode an : (List<AnnotationNode>) cn.visibleAnnotations)
-                            classAnnotationCondition.trigger(an, TriggerContext.of(
-                                    Pair.of("eventBus", bus),
-                                    Pair.of("emulated", handle),
-                                    Pair.of("entryName", bufferedEntry.getKey()),
-                                    Pair.of("buffered", bufferedEntry.getValue()),
-                                    Pair.of("resources", buffered),
-                                    Pair.of("class", cn),
-                                    Pair.of("annotation", an),
-                                    Pair.of("launchloader", launchClassLoader),
-                                    Pair.of("url", url)
-                            ));
-
-                    if(cn.methods != null)
-                        for(MethodNode mn : (List<MethodNode>) cn.methods)
-                            if(mn.visibleAnnotations != null)
-                                for(AnnotationNode an : (List<AnnotationNode>) mn.visibleAnnotations)
-                                    methodAnnotationCondition.trigger(an, TriggerContext.of(
-                                            Pair.of("eventBus", bus),
-                                            Pair.of("emulated", handle),
-                                            Pair.of("resources", buffered),
-                                            Pair.of("class", cn),
-                                            Pair.of("method", mn),
-                                            Pair.of("annotation", an)
-                                    ));
-                } catch (Throwable e) {
-                    bus.post(new ModuleResourceFailureEvent(handle, e));
-                }
-            }
         } catch (Throwable e) {
             bus.post(new ModuleResourceFailureEvent(handle, e));
+        }
+
+        for(int i = 0; i < resourcesList.size(); i++)
+        {
+            URL url = urlList.get(i);
+            InMemoryResources buffered = resourcesList.get(i);
+
+            for(Map.Entry<String, byte[]> bufferedEntry : buffered.getResources().entrySet()) try {
+                if(!ClassUtil.checkMagicValue(bufferedEntry.getValue()))
+                    continue;
+
+                ClassNode cn = new ClassNode();
+                ClassReader cr = new ClassReader(bufferedEntry.getValue());
+
+                cr.accept(cn, 0);
+
+                if(cn.visibleAnnotations != null)
+                    for(AnnotationNode an : (List<AnnotationNode>) cn.visibleAnnotations)
+                        classAnnotationCondition.trigger(an, TriggerContext.of(
+                                Pair.of("eventBus", bus),
+                                Pair.of("emulated", handle),
+                                Pair.of("entryName", bufferedEntry.getKey()),
+                                Pair.of("buffered", bufferedEntry.getValue()),
+                                Pair.of("resources", buffered),
+                                Pair.of("class", cn),
+                                Pair.of("annotation", an),
+                                Pair.of("launchloader", launchClassLoader),
+                                Pair.of("url", url)
+                        ));
+
+                if(cn.methods != null)
+                    for(MethodNode mn : (List<MethodNode>) cn.methods)
+                        if(mn.visibleAnnotations != null)
+                            for(AnnotationNode an : (List<AnnotationNode>) mn.visibleAnnotations)
+                                methodAnnotationCondition.trigger(an, TriggerContext.of(
+                                        Pair.of("eventBus", bus),
+                                        Pair.of("emulated", handle),
+                                        Pair.of("resources", buffered),
+                                        Pair.of("class", cn),
+                                        Pair.of("method", mn),
+                                        Pair.of("annotation", an)
+                                ));
+            } catch (Throwable e) {
+                bus.post(new ModuleResourceFailureEvent(handle, e));
+            }
         }
     }
 
