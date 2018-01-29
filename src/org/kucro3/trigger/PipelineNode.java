@@ -34,7 +34,7 @@ public final class PipelineNode extends Appendable {
     @Override
     void trigger(TriggerContext context)
     {
-        if(fence != null && !fence.isDismantled())
+        if(fence != null && !fence.dismantling && !fence.isDismantled())
             fence.fence(context);
         else if(trigger.trigger(context))
             super.next.trigger(context);

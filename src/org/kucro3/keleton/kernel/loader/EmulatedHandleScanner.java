@@ -36,6 +36,11 @@ import java.util.jar.JarInputStream;
 public class EmulatedHandleScanner {
     public EmulatedHandleScanner(EmulatedHandle handle, LaunchClassLoader launchClassLoader)
     {
+        this(handle, launchClassLoader, new EventBus("EmulatedHandleScanner"));
+    }
+
+    public EmulatedHandleScanner(EmulatedHandle handle, LaunchClassLoader launchClassLoader, EventBus eventBus)
+    {
         if(!handle.exists())
             handle.makeDirectory();
         else if(!handle.isDirectory())
@@ -43,6 +48,7 @@ public class EmulatedHandleScanner {
 
         this.handle = handle;
         this.launchClassLoader = launchClassLoader;
+        this.bus = eventBus;
     }
 
     public void scan()
@@ -162,7 +168,7 @@ public class EmulatedHandleScanner {
 
     private final EmulatedHandle handle;
 
-    private final EventBus bus = new EventBus(this.toString());
+    private final EventBus bus;
 
     private final LaunchClassLoader launchClassLoader;
 }

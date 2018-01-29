@@ -23,6 +23,12 @@ public class FileEmulatedHandle implements EmulatedHandle {
     }
 
     @Override
+    public String toString()
+    {
+        return getPath();
+    }
+
+    @Override
     public EmulatedHandle[] listHandles()
     {
         return listHandles((unused) -> true);
@@ -45,7 +51,7 @@ public class FileEmulatedHandle implements EmulatedHandle {
                 handles.add(handle);
         }
 
-        return handles.toArray(new EmulatedHandle[0]);
+        return handles.toArray(new EmulatedHandle[handles.size()]);
     }
 
     @Override

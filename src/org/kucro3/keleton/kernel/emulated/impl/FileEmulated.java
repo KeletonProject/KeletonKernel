@@ -9,8 +9,8 @@ public class FileEmulated implements Emulated {
     public FileEmulated(File root, File moduleRoot, File bootFile)
     {
         this.root = root;
-        this.moduleRoot = new ImmutableFileEmulatedHandle(moduleRoot);
-        this.bootFile = new ReadOnlyFileEmulatedHandle(bootFile);
+        this.moduleRoot = new ImmutableFileEmulatedHandle(moduleRoot, root);
+        this.bootFile = new ReadOnlyFileEmulatedHandle(bootFile, root);
     }
 
     @Override

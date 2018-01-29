@@ -8,19 +8,25 @@ public class Fence {
     {
     }
 
-    public void dismantle()
+    public synchronized void dismantle()
     {
-        if(dismantled)
-            throw new IllegalStateException("Already dismantled");
+        try {
+            dismantling = true;
 
-        if(triggerable == null)
-            throw new IllegalStateException("Not owned by a trigger");
+            if (dismantled)
+                throw new IllegalStateException("Already dismantled");
 
-        for(TriggerContext context : fenced)
-            triggerable.trigger(context);
+            if (triggerable == null)
+                throw new IllegalStateException("Not owned by a trigger");
 
-        fenced.clear();
-        dismantled = true;
+            for (TriggerContext context : fenced)
+                triggerable.trigger(context);
+
+            fenced.clear();
+            dismantled = true;
+        } finally {
+            dismantling = false;
+        }
     }
 
     public boolean isDismantled()
@@ -41,6 +47,8 @@ public class Fence {
     }
 
     private boolean dismantled;
+
+    boolean dismantling;
 
     private List<TriggerContext> fenced = new ArrayList<>();
 
