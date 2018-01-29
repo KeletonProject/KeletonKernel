@@ -1,7 +1,5 @@
 package org.kucro3.trigger;
 
-import java.util.Objects;
-
 abstract class Appendable extends Triggerable {
     void check()
     {
@@ -11,7 +9,6 @@ abstract class Appendable extends Triggerable {
 
    PipelineNode then(NormalTrigger trigger, PipelineHead head, Fence fence)
     {
-        Objects.requireNonNull(trigger, "trigger");
         check();
 
         PipelineNode node = new PipelineNode(trigger, head, fence);
@@ -21,7 +18,6 @@ abstract class Appendable extends Triggerable {
 
     PipelineTerminal then(TerminalTrigger trigger, PipelineHead head, Fence fence)
     {
-        Objects.requireNonNull(trigger, "trigger");
         check();
 
         PipelineTerminal terminal = new PipelineTerminal(trigger, head, fence);

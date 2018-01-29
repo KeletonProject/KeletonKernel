@@ -30,7 +30,7 @@ public class Fence {
 
     void initializeOwner(Triggerable triggerable)
     {
-        if(triggerable != null)
+        if(this.triggerable != null)
             throw new IllegalStateException("Already owned by a trigger");
         this.triggerable = triggerable;
     }
