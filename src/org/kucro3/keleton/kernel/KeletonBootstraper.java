@@ -1,7 +1,9 @@
 package org.kucro3.keleton.kernel;
 
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.exception.KeletonException;
+import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
@@ -15,8 +17,12 @@ import org.kucro3.keleton.kernel.module.ModuleCollection;
 import org.kucro3.keleton.kernel.module.ModuleSequence;
 import org.kucro3.keleton.klink.Library;
 import org.kucro3.keleton.module.Module;
+import org.kucro3.klink.Executable;
+import org.kucro3.klink.SequenceUtil;
 import org.kucro3.trigger.Fence;
 import org.kucro3.trigger.Pipeline;
+
+import java.io.IOException;
 
 public class KeletonBootstraper {
     public KeletonBootstraper()
@@ -39,31 +45,17 @@ public class KeletonBootstraper {
         else
             throw new IllegalStateException("Illegal property: keleton.kernel.emulation=" + emulationPolicy);
 
+        launched = true;
+
         return true;
     }
 
     public synchronized boolean bootstrap() throws KeletonException
     {
-        // TODO
-//        if(launched)
-//            return false;
-//
-//        ModuleSequence sequence = new ModuleSequence(new KeletonModuleFileScanner(new File("modules\\")).scan());
-//        KeletonModuleManagerImpl impl = KeletonKernel.getModuleManagerImpl();
-//
-//        impl.sequence = sequence;
-//
-//        sequence.loadAll();
-//        sequence.enableAll();
-
-        return true;
-    }
-
-    public synchronized boolean discoverModules() throws KeletonException
-    {
         EmulatedHandleScanner scanner = new EmulatedHandleScanner(
                 EmulatedAPIProvider.getEmulated().getModuleDirectory(),
-                (LaunchClassLoader) this.getClass().getClassLoader()
+                (LaunchClassLoader) this.getClass().getClassLoader(),
+                KeletonKernel.getEventBus()
         );
 
         ModuleCollection collection = moduleCollection = new ModuleCollection();
@@ -71,22 +63,48 @@ public class KeletonBootstraper {
         scanner.registerClassAnnotationTriggers(
                 Module.class,
                 Pipeline.of(Module.class.getCanonicalName())
-                    .then(new KeletonModuleVerifyingTrigger(collection))
-                    .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggersFence)
-                    .then(new KeletonModuleLoadCompletionTrigger())
-                .end()
+                        .then(new KeletonModuleVerifyingTrigger(collection))
+                        .then(new KeletonModuleDiscoveringTrigger(collection), moduleTriggersFence)
+                        .then(new KeletonModuleLoadCompletionTrigger())
+                        .end()
         );
 
         scanner.registerClassAnnotationTriggers(
                 Library.class,
                 Pipeline.of(Pipeline.class.getCanonicalName())
-                    .then(new KlinkLibraryConvertingTrigger())
-                    .then(new KlinkLibraryPreloadingTrigger())
-                    .then(new KlinkLibraryRegistryTrigger(KeletonKernel.getKlink()))
-                .end()
+                        .then(new KlinkLibraryConvertingTrigger())
+                        .then(new KlinkLibraryPreloadingTrigger())
+                        .then(new KlinkLibraryRegistryTrigger(KeletonKernel.getKlink()))
+                        .end()
         );
 
         scanner.scan();
+
+        Executable executable = null;
+        EmulatedHandle handle = EmulatedAPIProvider.getEmulated().getBootFile();
+
+        if(!handle.exists() || handle.isDirectory()) {
+            try {
+                handle.create();
+                executable = KeletonKernel.getKlink().compile(SequenceUtil.readFrom(handle.openInput().orElseThrow(
+                        () -> new IOException("InputStream access failure")
+                )));
+            } catch (IOException e) {
+                throw new KeletonInternalException("Failed to access boot file", e);
+            }
+        }
+
+        try {
+            if(executable == null)
+                throw new IllegalStateException("Empty compilation");
+
+            executable.execute(
+                    KeletonKernel.getKlink(),
+                    KeletonKernel.getBootEnv()
+            );
+        } catch (Exception e) {
+            throw new KeletonInternalException("BOOT FAILURE", e);
+        }
 
         return true;
     }
