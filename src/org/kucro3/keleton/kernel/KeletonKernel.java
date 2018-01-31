@@ -6,8 +6,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
@@ -60,16 +59,35 @@ public class KeletonKernel extends DummyModContainer {
     }
 
     @Subscribe
-    public void onPreInitialization(FMLPreInitializationEvent event) throws KeletonException
+    public void onConstruction(FMLConstructionEvent event) throws KeletonException
     {
         bootstraper.initialize();
-        bootstraper.loadModules();
+    }
+
+    @Subscribe
+    public void onPreInitialization(FMLPreInitializationEvent event) throws KeletonException
+    {
+        bootstraper.bootstrap();
+
     }
 
     @Subscribe
     public void onInitialization(FMLInitializationEvent event) throws KeletonException
     {
+        bootstraper.loadModules();
+    }
+
+    @Subscribe
+    public void onPostInitialization(FMLPostInitializationEvent event) throws KeletonException
+    {
         bootstraper.enableModules();
+    }
+
+    @Subscribe
+    public void onStopping(FMLServerStoppingEvent event) throws KeletonException
+    {
+        bootstraper.disableModules();
+        bootstraper.destroyModules();
     }
 
     @Subscribe
