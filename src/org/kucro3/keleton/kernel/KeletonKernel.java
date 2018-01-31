@@ -6,6 +6,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
@@ -47,6 +48,8 @@ public class KeletonKernel extends DummyModContainer {
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");
         runtimeEnv = klink.createEnv("RUNTIME");
+
+        bootstraper = new KeletonBootstraper();
     }
 
     @Override
@@ -59,13 +62,13 @@ public class KeletonKernel extends DummyModContainer {
     @Subscribe
     public void onPreInitialization(FMLPreInitializationEvent event) throws KeletonException
     {
-        new KeletonBootstraper();
-
-        KeletonBootstraper bootstraper = KeletonBootstraper.getBootstraper();
-
         bootstraper.initialize();
-        bootstraper.discoverModules();
         bootstraper.loadModules();
+    }
+
+    @Subscribe
+    public void onInitialization(FMLInitializationEvent event) throws KeletonException
+    {
         bootstraper.enableModules();
     }
 
@@ -163,4 +166,6 @@ public class KeletonKernel extends DummyModContainer {
     private static Environment bootEnv;
 
     private static Environment runtimeEnv;
+
+    private static KeletonBootstraper bootstraper;
 }

@@ -102,7 +102,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         Objects.requireNonNull(establisher);
         Objects.requireNonNull(object);
 
-        synchronized(state) {
+        synchronized(lock) {
             if(this.currentEstablisher == null && this.state.equals(State.FENCED))
                 return false; // fenced by self
 
@@ -129,7 +129,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
         Objects.requireNonNull(establisher);
         Objects.requireNonNull(object);
 
-        synchronized(state) {
+        synchronized(lock) {
             if (this.currentEstablisher == null)
                 throw new IllegalStateException("Not in established fence");
 
@@ -190,7 +190,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     void transformed(State from, State to)
     {
         postTransformed(from, to);
-        synchronized (state) {
+        synchronized (lock) {
             exitFence(this, this);
             this.state = to;
         }
@@ -295,7 +295,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     private Optional<CompletableFuture<Void>> load0(boolean wait)
     {
-        return transform(State.LOADED, () -> instance.onLoad(), () -> true, wait);
+        return transform(State.LOADED, instance::onLoad, () -> true, wait);
     }
 
     @Override
@@ -312,7 +312,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     private Optional<CompletableFuture<Void>> enable0(boolean wait)
     {
-        return transform(State.ENABLED, () -> instance.onEnable(), () -> true, wait);
+        return transform(State.ENABLED, instance::onDisable, () -> true, wait);
     }
 
     @Override
@@ -329,7 +329,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     private Optional<CompletableFuture<Void>> disable0(boolean wait)
     {
-        return transform(State.DISABLED, () -> instance.onDisable(), () -> checkDisablingFunction(), wait);
+        return transform(State.DISABLED, instance::onDisable, this::checkDisablingFunction, wait);
     }
 
     @Override
@@ -346,7 +346,7 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
 
     private Optional<CompletableFuture<Void>> destroy0(boolean wait)
     {
-        return transform(State.DESTROYED, () -> instance.onDestroy(), () -> true, wait);
+        return transform(State.DESTROYED, instance::onDestroy, () -> true, wait);
     }
 
     void postBadDependency(State expected, KeletonModule bad)
@@ -537,6 +537,8 @@ public class KeletonModuleImpl implements KeletonModule, KeletonModule.FenceObje
     private final EmulatedHandle source;
 
     private final URL url;
+
+    private final Object lock = new Object();
 
     static interface DisablingCallback
     {
