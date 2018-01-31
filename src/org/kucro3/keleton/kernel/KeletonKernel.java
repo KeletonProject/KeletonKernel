@@ -113,6 +113,12 @@ public class KeletonKernel extends DummyModContainer {
     }
 
     @Subscribe
+    public void onStateChangeIgnored(KeletonModuleEvent.StateTransformation.Ignored event)
+    {
+        logger.info("Ignored state transformation of module \"" + event.getModule().getId() + "\": " + event.getModule());
+    }
+
+    @Subscribe
     public void onResourceFailure(ModuleResourceFailureEvent event)
     {
         logger.error("Failed to load resource: " + event.getHandle().getPath(), event.getCause());
