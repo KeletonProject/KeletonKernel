@@ -5,6 +5,7 @@ import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
+import org.kucro3.keleton.kernel.emulated.EmulationInitializer;
 import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
 import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryConvertingTrigger;
@@ -35,18 +36,22 @@ public class KeletonBootstraper {
 
     public synchronized boolean initialize() throws KeletonException
     {
-        if(launched)
+        if(launched || initialized)
             return false;
 
+        EmulationInitializer emulationInitializer = new EmulationInitializer(EmulatedAPIProvider::initialize);
+        emulationInitializer.initialize(System.getProperties());
 
-
-        launched = true;
+        initialized = true;
 
         return true;
     }
 
     public synchronized boolean bootstrap() throws KeletonException
     {
+        if(!initialized)
+            return false;
+
         EmulatedHandleScanner scanner = new EmulatedHandleScanner(
                 EmulatedAPIProvider.getEmulated().getModuleDirectory(),
                 (LaunchClassLoader) this.getClass().getClassLoader(),
@@ -100,6 +105,8 @@ public class KeletonBootstraper {
             throw new KeletonInternalException("BOOT FAILURE", e);
         }
 
+        launched = true;
+
         return true;
     }
 
@@ -148,6 +155,8 @@ public class KeletonBootstraper {
     }
 
     private boolean launched;
+
+    private boolean initialized;
 
     private Fence moduleTriggersFence;
 
