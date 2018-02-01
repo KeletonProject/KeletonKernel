@@ -38,12 +38,7 @@ public class KeletonBootstraper {
         if(launched)
             return false;
 
-        String emulationPolicy = System.getProperty("keleton.kernel.emulation");
 
-        if(emulationPolicy == null || emulationPolicy.equalsIgnoreCase("default"))
-            EmulatedAPIProvider.initialize(new LocalEmulated());
-        else
-            throw new IllegalStateException("Illegal property: keleton.kernel.emulation=" + emulationPolicy);
 
         launched = true;
 
