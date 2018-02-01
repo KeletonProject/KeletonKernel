@@ -80,18 +80,17 @@ public class KeletonBootstraper {
 
         scanner.scan();
 
-        Executable executable = null;
+        Executable executable;
         EmulatedHandle handle = EmulatedAPIProvider.getEmulated().getBootFile();
 
-        if(!handle.exists() || handle.isDirectory()) {
-            try {
+        try {
+            if(!handle.exists() || handle.isDirectory())
                 handle.create();
-                executable = KeletonKernel.getKlink().compile(SequenceUtil.readFrom(handle.openInput().orElseThrow(
-                        () -> new IOException("InputStream access failure")
-                )));
-            } catch (IOException e) {
-                throw new KeletonInternalException("Failed to access boot file", e);
-            }
+            executable = KeletonKernel.getKlink().compile(SequenceUtil.readFrom(handle.openInput().orElseThrow(
+                    () -> new IOException("InputStream access failure")
+            )));
+        } catch (IOException e) {
+            throw new KeletonInternalException("Failed to access boot file", e);
         }
 
         try {
