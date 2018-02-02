@@ -1,8 +1,12 @@
 package org.kucro3.keleton.kernel.xmount;
 
+import org.kucro3.keleton.kernel.klink.XMount;
+import org.kucro3.keleton.kernel.klink.XUnmount;
 import org.kucro3.keleton.klink.xmount.LoadedMounter;
 import org.kucro3.keleton.klink.xmount.Mounter;
 import org.kucro3.keleton.klink.xmount.XMountManager;
+import org.kucro3.klink.Klink;
+import org.kucro3.klink.expression.ExpressionLibrary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +14,16 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class XMountManagerImpl implements XMountManager {
-    public XMountManagerImpl(BiFunction<String, Mounter, LoadedMounter> loadedMounterProvider)
-    {
+    public XMountManagerImpl(BiFunction<String, Mounter, LoadedMounter> loadedMounterProvider) {
         this.loadedMounterProvider = loadedMounterProvider;
+    }
+
+    public void initialize(Klink sys)
+    {
+        ExpressionLibrary lib = sys.getExpressions();
+
+        lib.putExpression(XMount.instance());
+        lib.putExpression(XUnmount.instance());
     }
 
     @Override
