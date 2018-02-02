@@ -17,6 +17,8 @@ import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
 import org.kucro3.klink.Environment;
 import org.kucro3.klink.Klink;
+import org.kucro3.klink.functional.KlinkFunctionRegistry;
+import org.kucro3.klink.functional.NativeFunctionRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Sponge;
@@ -47,6 +49,9 @@ public class KeletonKernel extends DummyModContainer {
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");
         runtimeEnv = klink.createEnv("RUNTIME");
+
+        klink.provideService(KlinkFunctionRegistry.class, new KlinkFunctionRegistry());
+        klink.provideService(NativeFunctionRegistry.class, new NativeFunctionRegistry());
 
         bootstraper = new KeletonBootstraper();
     }
