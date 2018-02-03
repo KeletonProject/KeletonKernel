@@ -1,9 +1,10 @@
 package org.kucro3.trigger;
 
 public class PipelineHead extends Appendable {
-    PipelineHead(String name)
+    PipelineHead(String name, ExceptionHandlerGroup handlers)
     {
         this.name = name;
+        this.handlers = handlers;
     }
 
     public PipelineNode then(NormalTrigger trigger)
@@ -38,4 +39,6 @@ public class PipelineHead extends Appendable {
     }
 
     String name;
+
+    final ExceptionHandlerGroup handlers;
 }

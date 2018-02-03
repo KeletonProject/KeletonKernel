@@ -36,8 +36,15 @@ public final class PipelineNode extends Appendable {
     {
         if(fence != null && !fence.dismantling && !fence.isDismantled())
             fence.fence(context);
-        else if(trigger.trigger(context))
-            super.next.trigger(context);
+        else try {
+            if (trigger.trigger(context))
+                super.next.trigger(context);
+        } catch (TriggerException unhandled) {
+            throw unhandled;
+        } catch (Exception e) {
+            if(!head.handlers.handle(this, e))
+                throw new TriggerException(this, e);
+        }
     }
 
     private final Fence fence;

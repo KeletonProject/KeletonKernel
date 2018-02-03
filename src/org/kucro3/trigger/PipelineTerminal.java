@@ -18,8 +18,14 @@ public final class PipelineTerminal extends Triggerable {
     {
         if(fence != null && !fence.dismantling && !fence.isDismantled())
             fence.fence(context);
-        else
+        else try {
             trigger.trigger(context);
+        } catch (TriggerException unhandled) {
+            throw unhandled;
+        } catch (Exception e) {
+            if(!head.handlers.handle(this, e))
+                throw new TriggerException(this, e);
+        }
     }
 
     private final Fence fence;
