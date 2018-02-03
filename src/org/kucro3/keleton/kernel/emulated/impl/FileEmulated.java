@@ -8,7 +8,7 @@ import java.io.*;
 public class FileEmulated implements Emulated {
     public FileEmulated(File root, File moduleRoot, File bootFile)
     {
-        this.root = root;
+        this.root = new ImmutableFileEmulatedHandle(root, root);
         this.moduleRoot = new ImmutableFileEmulatedHandle(moduleRoot, root);
         this.bootFile = new ReadOnlyFileEmulatedHandle(bootFile, root);
     }
@@ -16,7 +16,8 @@ public class FileEmulated implements Emulated {
     @Override
     public EmulatedHandle getHandle(String path)
     {
-        return new FileEmulatedHandle(new File(root, path), root, true, true, true);
+        return root.subHandle(path)
+                .orElseThrow(IllegalStateException::new);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class FileEmulated implements Emulated {
         return bootFile;
     }
 
-    private final File root;
+    private final FileEmulatedHandle root;
 
     private final FileEmulatedHandle moduleRoot;
 

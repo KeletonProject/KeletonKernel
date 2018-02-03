@@ -19,6 +19,10 @@ import java.util.function.Consumer;
  *  -Dkeleton.kernel.emulation.modules= MODULE DIRECTORY
  *  -Dkeleton.kernel.emulation.bootfile= BOOT FILE
  *
+ * Klink Boot File Emulation: (TBC)
+ *  -Dkeleton.kernel.emulation=bootfile
+ *  -Dkeleton.kernel.emulation.bootfile= BOOT FILE
+ *
  * Net Emulation:
  *  TBC
  *
@@ -35,32 +39,47 @@ public class EmulationInitializer {
 
     public void initialize(Properties properties)
     {
-        String emulationPolicy = properties.getProperty("keleton.kernel.emulation");
+        String emulationPolicy = properties.getProperty(PROPERTY_EMULATION);
 
-        emulationPolicy = emulationPolicy == null ? "default" : emulationPolicy;
+        emulationPolicy = emulationPolicy == null ? EMULATION_DEFAULT : emulationPolicy;
 
-        if(emulationPolicy.equalsIgnoreCase("default"))
+        if(emulationPolicy.equalsIgnoreCase(EMULATION_DEFAULT))
             consumer.accept(new LocalEmulated());
-        else if(emulationPolicy.equalsIgnoreCase("custom"))
+        else if(emulationPolicy.equalsIgnoreCase(EMULATION_CUSTOM))
         {
-            File root;
-            File modules;
-            File bootFile;
-
-            root = new File(Optional.of(properties.getProperty("keleton.kernel.emulation.root"))
-                    .orElseThrow(() -> new IllegalStateException("Property undefined: keleton.kernel.emulation.root")));
-
-            modules = new File(Optional.of(properties.getProperty("keleton.kernel.emulation.modules"))
-                    .orElseThrow(() -> new IllegalStateException("Property undefined: keleton.kernel.emulation.modules")));
-
-            bootFile = new File(Optional.of("keleton.kernel.emulation.bootfile")
-                    .orElseThrow(() -> new IllegalStateException("Property undefined: keleton.kernel.emulation.bootfile")));
+            File root = new File(requireProperty(PROPERTY_EMULATION_ROOT, properties));
+            File modules = new File(requireProperty(PROPERTY_EMULATION_MODULES, properties));
+            File bootFile = new File(requireProperty(PROPERTY_EMULATION_BOOTFILE, properties));
 
             consumer.accept(new CustomEmulated(root, modules, bootFile));
         }
+        else if(emulationPolicy.equalsIgnoreCase(EMULATION_BOOTFILE))
+        {
+            // TBC
+        }
         else
-            throw new IllegalStateException("Illegal property: keleton.kernel.emulation=" + emulationPolicy);
+            throw new IllegalStateException("Illegal property: " + PROPERTY_EMULATION + "=" + emulationPolicy);
     }
+
+    private static String requireProperty(String name, Properties properties)
+    {
+        return Optional.ofNullable(properties.getProperty(name))
+                .orElseThrow(() -> new IllegalStateException("Property undefined: " + name));
+    }
+
+    private static final String EMULATION_DEFAULT = "default";
+
+    private static final String EMULATION_CUSTOM = "custom";
+
+    private static final String EMULATION_BOOTFILE = "bootfile";
+
+    private static final String PROPERTY_EMULATION = "keleton.kernel.emulation";
+
+    private static final String PROPERTY_EMULATION_ROOT = "keleton.kernel.emulation.root";
+
+    private static final String PROPERTY_EMULATION_MODULES = "keleton.kernel.emulation.modules";
+
+    private static final String PROPERTY_EMULATION_BOOTFILE = "keleton.kernel.emulation.bootfile";
 
     private final Consumer<Emulated> consumer;
 }

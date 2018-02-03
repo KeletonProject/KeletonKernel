@@ -91,12 +91,21 @@ public class FileEmulatedHandle implements EmulatedHandle {
     }
 
     @Override
+    public Optional<EmulatedHandle> subHandle(String path)
+    {
+        if(!isDirectory())
+            return Optional.empty();
+        File file = new File(root, path);
+        return Optional.of(new FileEmulatedHandle(file, root, true, true, true));
+    }
+
+    @Override
     public Optional<EmulatedHandle> getParentHandle()
     {
         File parent = file.getParentFile();
         if(parent.equals(root))
             return Optional.empty();
-        return Optional.of(new FileEmulatedHandle(parent, root, false, false , true));
+        return Optional.of(new FileEmulatedHandle(parent, root, true, true, true));
     }
 
     @Override
@@ -108,12 +117,16 @@ public class FileEmulatedHandle implements EmulatedHandle {
     @Override
     public boolean canRead()
     {
+        if(isDirectory())
+            return false;
         return canRead;
     }
 
     @Override
     public boolean canWrite()
     {
+        if(isDirectory())
+            return false;
         return canWrite;
     }
 
