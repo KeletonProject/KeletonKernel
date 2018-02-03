@@ -32,5 +32,5 @@ public class IgnoreModule implements ExpressionCompiler.Level1 {
         return INSTANCE;
     }
 
-    private static final Expression INSTANCE = new Expression("kernel:IgnoreModule", new IgnoreModule());
+    private static final Expression INSTANCE = new Expression("kernel::IgnoreModule", new IgnoreModule());
 }

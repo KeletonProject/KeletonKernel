@@ -56,6 +56,41 @@ public class KeletonBootstraper {
         if(!initialized)
             return false;
 
+        Executable executable;
+        EmulatedHandle handle = EmulatedAPIProvider.getEmulated().getBootFile();
+
+        try {
+            if(!handle.exists() || handle.isDirectory())
+                handle.create();
+            executable = KeletonKernel.getKlink().compile(SequenceUtil.readFrom(handle.openInput().orElseThrow(
+                    () -> new IOException("InputStream access failure")
+            )));
+        } catch (IOException e) {
+            throw new KeletonInternalException("Failed to access boot file", e);
+        }
+
+        try {
+            if(executable == null)
+                throw new IllegalStateException("Empty compilation");
+
+            executable.execute(
+                    KeletonKernel.getKlink(),
+                    KeletonKernel.getBootEnv()
+            );
+        } catch (Exception e) {
+            throw new KeletonInternalException("BOOT FAILURE", e);
+        }
+
+        launched = true;
+
+        return true;
+    }
+
+    public synchronized boolean discoverModules() throws KeletonException
+    {
+        if(!initialized)
+            return false;
+
         EmulatedHandleScanner scanner = new EmulatedHandleScanner(
                 EmulatedAPIProvider.getEmulated().getModuleDirectory(),
                 (LaunchClassLoader) this.getClass().getClassLoader(),
@@ -92,33 +127,6 @@ public class KeletonBootstraper {
         );
 
         scanner.scan();
-
-        Executable executable;
-        EmulatedHandle handle = EmulatedAPIProvider.getEmulated().getBootFile();
-
-        try {
-            if(!handle.exists() || handle.isDirectory())
-                handle.create();
-            executable = KeletonKernel.getKlink().compile(SequenceUtil.readFrom(handle.openInput().orElseThrow(
-                    () -> new IOException("InputStream access failure")
-            )));
-        } catch (IOException e) {
-            throw new KeletonInternalException("Failed to access boot file", e);
-        }
-
-        try {
-            if(executable == null)
-                throw new IllegalStateException("Empty compilation");
-
-            executable.execute(
-                    KeletonKernel.getKlink(),
-                    KeletonKernel.getBootEnv()
-            );
-        } catch (Exception e) {
-            throw new KeletonInternalException("BOOT FAILURE", e);
-        }
-
-        launched = true;
 
         return true;
     }
