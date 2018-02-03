@@ -12,5 +12,6 @@ public class SetModules {
         return INSTANCE;
     }
 
-    private static final Expression INSTANCE = new Expression("kernel:emualtion::SetModules", new SetRoot(false));
+
+    private static final Expression INSTANCE = new Expression("kernel:emulation::SetModules", new SetRoot(false));
 }

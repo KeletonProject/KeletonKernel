@@ -133,7 +133,7 @@ public class KeletonKernel extends DummyModContainer {
     @Subscribe
     public void onStateChangeIgnored(KeletonModuleEvent.StateTransformation.Ignored event)
     {
-        logger.info("Ignored state transformation of module \"" + event.getModule().getId() + "\": " + event.getModule());
+        logger.info("Ignored state transformation of module \"" + event.getModule().getId() + "\": " + event.getMessage());
     }
 
     @Subscribe

@@ -8,6 +8,14 @@ public class Fence {
     {
     }
 
+    public boolean dismantleIfOwned()
+    {
+        if(triggerable == null)
+            return false;
+        dismantle();
+        return true;
+    }
+
     public synchronized void dismantle()
     {
         try {

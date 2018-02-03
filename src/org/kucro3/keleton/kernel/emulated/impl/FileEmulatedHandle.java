@@ -10,7 +10,7 @@ import java.util.Optional;
 public class FileEmulatedHandle implements EmulatedHandle {
     FileEmulatedHandle(File file, boolean canRead, boolean canWrite, boolean canDelete)
     {
-        this(file, null, canRead, canWrite, canDelete);
+        this(file, file, canRead, canWrite, canDelete);
     }
 
     FileEmulatedHandle(File file, File root, boolean canRead, boolean canWrite, boolean canDelete)
