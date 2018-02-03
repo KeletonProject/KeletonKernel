@@ -2,10 +2,7 @@ package org.kucro3.keleton.kernel.emulated;
 
 import org.kucro3.keleton.emulated.Emulated;
 import org.kucro3.keleton.emulated.EmulatedHandle;
-import org.kucro3.keleton.kernel.emulated.impl.CustomEmulated;
-import org.kucro3.keleton.kernel.emulated.impl.ImmutableFileEmulatedHandle;
-import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
-import org.kucro3.keleton.kernel.emulated.impl.MutableEmulated;
+import org.kucro3.keleton.kernel.emulated.impl.*;
 
 import java.io.File;
 import java.util.Optional;
@@ -64,7 +61,7 @@ public class EmulationInitializer {
             EmulatedHandle bootFile;
 
             if(boot.startsWith(SOURCE_FILE))
-                bootFile = new ImmutableFileEmulatedHandle(new File(boot.substring(SOURCE_FILE.length())));
+                bootFile = new ReadOnlyFileEmulatedHandle(new File(boot.substring(SOURCE_FILE.length())));
             else
                 throw new IllegalStateException("Unknown boot source: " + boot);
 
