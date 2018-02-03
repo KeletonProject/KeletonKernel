@@ -8,16 +8,12 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class KlinkLibraryPreloadingTrigger implements NormalTrigger {
     @Override
-    public boolean trigger(TriggerContext context)
+    public boolean trigger(TriggerContext context) throws Exception
     {
-        try {
-            ClassNode cn = context.first(ClassNode.class).get();
-            LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
+        ClassNode cn = context.first(ClassNode.class).get();
+        LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
 
-            context.set("loaded", loader.findClass(cn.name.replace('/', '.')));
-        } catch (Exception e) {
-            throw new KeletonInternalException(e);
-        }
+        context.set("loaded", loader.findClass(cn.name.replace('/', '.')));
 
         return true;
     }

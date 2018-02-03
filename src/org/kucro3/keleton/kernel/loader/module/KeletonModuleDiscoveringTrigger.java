@@ -30,74 +30,64 @@ public class KeletonModuleDiscoveringTrigger implements NormalTrigger {
     }
 
     @Override
-    public boolean trigger(TriggerContext context)
+    public boolean trigger(TriggerContext context) throws Exception
     {
-        try {
-            URL url = context.first(URL.class).get();
-            ClassNode cn = context.first(ClassNode.class).get();
-            EmulatedHandle handle = context.first(EmulatedHandle.class).get();
-            LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
+        URL url = context.first(URL.class).get();
+        ClassNode cn = context.first(ClassNode.class).get();
+        EmulatedHandle handle = context.first(EmulatedHandle.class).get();
+        LaunchClassLoader loader = context.first(LaunchClassLoader.class).get();
 
-            try {
-                Class<?> mainClass = loader.findClass(cn.name.replace("/", "."));
-                Module info = Objects.requireNonNull(mainClass.getAnnotation(Module.class));
+        Class<?> mainClass = loader.findClass(cn.name.replace("/", "."));
+        Module info = Objects.requireNonNull(mainClass.getAnnotation(Module.class));
 
-                KeletonLoaderEvent.Pre pre = new LoaderEventImpl.Pre(Cause.source(info).build(), info);
-                KeletonKernel.postEvent(pre);
+        KeletonLoaderEvent.Pre pre = new LoaderEventImpl.Pre(Cause.source(info).build(), info);
+        KeletonKernel.postEvent(pre);
 
-                if (pre.isCancelled()) {
-                    Cause cause = Cause.source(info).build();
+        if (pre.isCancelled()) {
+            Cause cause = Cause.source(info).build();
 
-                    if (pre.isCancelledWithCause())
-                        cause = cause.merge(pre.getCancellationCause().get());
+            if (pre.isCancelledWithCause())
+                cause = cause.merge(pre.getCancellationCause().get());
 
-                    KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info));
+            KeletonKernel.postEvent(new LoaderEventImpl.Cancelled(cause, info));
 
-                    return false;
-                }
-
-                // construct instance
-                Object object;
-                try {
-                    Injector injector = Guice.createInjector(new KeletonModuleInjection(info));
-                    object = injector.getInstance(mainClass);
-                } catch (Exception e) {
-                    KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
-                            Cause.source(info).build(),
-                            info,
-                            "Failed to construct module \"" + info.id() +  "\" of emulated: " + handle.getPath()));
-
-                    return false;
-                }
-
-                // check instance
-                if(!(object instanceof KeletonInstance))
-                {
-                    KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
-                            Cause.source(info).build(),
-                            info,
-                            "Class " + mainClass.getCanonicalName()
-                                    + " seems to be a module with id \"" + info.id()
-                                    + "\" but not a instance of KeletonInstance, IGNORED"
-                    ));
-
-                    return false;
-                }
-
-                KeletonInstance instance = (KeletonInstance) object;
-                KeletonModuleImpl impl = new KeletonModuleImpl(handle, url, instance, info);
-                collection.addModule(impl);
-
-                context.put("module", impl);
-                context.put("info", info);
-            } catch (Exception e) {
-                // TODO unexcepted
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e) {
-            // TODO unexpected
-            throw new RuntimeException(e);
+            return false;
         }
+
+        // construct instance
+        Object object;
+        try {
+            Injector injector = Guice.createInjector(new KeletonModuleInjection(info));
+            object = injector.getInstance(mainClass);
+        } catch (Exception e) {
+            KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
+                    Cause.source(info).build(),
+                    info,
+                    "Failed to construct module \"" + info.id() +  "\" of emulated: " + handle.getPath()));
+
+            return false;
+        }
+
+        // check instance
+        if(!(object instanceof KeletonInstance))
+        {
+            KeletonKernel.postEvent(new LoaderEventImpl.Ignored(
+                    Cause.source(info).build(),
+                    info,
+                    "Class " + mainClass.getCanonicalName()
+                            + " seems to be a module with id \"" + info.id()
+                            + "\" but not a instance of KeletonInstance, IGNORED"
+            ));
+
+            return false;
+        }
+
+        KeletonInstance instance = (KeletonInstance) object;
+        KeletonModuleImpl impl = new KeletonModuleImpl(handle, url, instance, info);
+        collection.addModule(impl);
+
+        context.put("module", impl);
+        context.put("info", info);
 
         return true;
     }

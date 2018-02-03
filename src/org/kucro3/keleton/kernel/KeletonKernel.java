@@ -76,7 +76,6 @@ public class KeletonKernel extends DummyModContainer {
     public void onPreInitialization(FMLPreInitializationEvent event) throws KeletonException
     {
         bootstraper.bootstrap();
-
     }
 
     @Subscribe

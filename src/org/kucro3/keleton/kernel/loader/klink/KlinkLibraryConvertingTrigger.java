@@ -17,43 +17,39 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class KlinkLibraryConvertingTrigger implements NormalTrigger {
     @Override
-    public boolean trigger(TriggerContext context)
+    public boolean trigger(TriggerContext context) throws Exception
     {
-        try {
-            ClassNode cn = context.first(ClassNode.class).get();
-            AnnotationNode an = context.first(AnnotationNode.class).get();
+        ClassNode cn = context.first(ClassNode.class).get();
+        AnnotationNode an = context.first(AnnotationNode.class).get();
 
-            InMemoryResources resources = context.first(InMemoryResources.class).get();
-            String entryName = context.<String>get("entryName").get();
+        InMemoryResources resources = context.first(InMemoryResources.class).get();
+        String entryName = context.<String>get("entryName").get();
 
-            Map<String, Object> values = AnnotationUtil.values(an);
+        Map<String, Object> values = AnnotationUtil.values(an);
 
-            String namespace = (String) values.get("value");
+        String namespace = (String) values.get("value");
 
-            if(namespace == null || namespace.isEmpty())
-                return true;
+        if(namespace == null || namespace.isEmpty())
+            return true;
 
-            if(cn.methods != null)
-                for(MethodNode mn : (List<MethodNode>) cn.methods)
-                    AnnotationUtil.getAnnotation(mn, ExpressionFunction.class).ifPresent((annotation) -> {
-                        Map<String, Object> exprInfo = AnnotationUtil.values(annotation);
+        if(cn.methods != null)
+            for(MethodNode mn : (List<MethodNode>) cn.methods)
+                AnnotationUtil.getAnnotation(mn, ExpressionFunction.class).ifPresent((annotation) -> {
+                    Map<String, Object> exprInfo = AnnotationUtil.values(annotation);
 
-                        String name;
-                        exprInfo.put(
-                                "name",
-                                namespace + ':' + ((name = (String) exprInfo.get("name")) == null ? "" : name));
+                    String name;
+                    exprInfo.put(
+                            "name",
+                            namespace + ':' + ((name = (String) exprInfo.get("name")) == null ? "" : name));
 
-                        AnnotationUtil.setValues(annotation, exprInfo);
-                    });
+                    AnnotationUtil.setValues(annotation, exprInfo);
+                });
 
-            ClassWriter cw = new ClassWriter(0);
-            cn.accept(cw);
-            byte[] converted = cw.toByteArray();
+        ClassWriter cw = new ClassWriter(0);
+        cn.accept(cw);
+        byte[] converted = cw.toByteArray();
 
-            resources.setResource(entryName, converted);
-        } catch (Exception e) {
-            throw new KeletonInternalException(e);
-        }
+        resources.setResource(entryName, converted);
 
         return true;
     }
