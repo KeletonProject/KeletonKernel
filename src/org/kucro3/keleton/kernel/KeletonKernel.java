@@ -46,6 +46,7 @@ public class KeletonKernel extends DummyModContainer {
         apimanager.export(KernelAPIProvider.class);
         apimanager.export(KernelAPIManagerProvider.class);
         apimanager.export(EmulatedAPIProvider.class);
+        apimanager.export(XMountAPIProvider.class);
 
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");

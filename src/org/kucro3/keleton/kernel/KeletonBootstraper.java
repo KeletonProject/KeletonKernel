@@ -6,7 +6,6 @@ import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.exception.KeletonInternalException;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.emulated.EmulationInitializer;
-import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
 import org.kucro3.keleton.kernel.loader.EmulatedHandleScanner;
 import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryConvertingTrigger;
 import org.kucro3.keleton.kernel.loader.klink.KlinkLibraryPreloadingTrigger;
@@ -16,7 +15,12 @@ import org.kucro3.keleton.kernel.loader.module.KeletonModuleLoadCompletionTrigge
 import org.kucro3.keleton.kernel.loader.module.KeletonModuleVerifyingTrigger;
 import org.kucro3.keleton.kernel.module.ModuleCollection;
 import org.kucro3.keleton.kernel.module.ModuleSequence;
+import org.kucro3.keleton.kernel.xmount.XMountAPIProvider;
+import org.kucro3.keleton.kernel.xmount.trigger.MountablePreloadingTrigger;
+import org.kucro3.keleton.kernel.xmount.trigger.MountableRegistryTrigger;
+import org.kucro3.keleton.kernel.xmount.trigger.MountableVerifyingTrigger;
 import org.kucro3.keleton.klink.Library;
+import org.kucro3.keleton.klink.xmount.Mountable;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.klink.Executable;
 import org.kucro3.klink.SequenceUtil;
@@ -75,6 +79,15 @@ public class KeletonBootstraper {
                         .then(new KlinkLibraryConvertingTrigger())
                         .then(new KlinkLibraryPreloadingTrigger())
                         .then(new KlinkLibraryRegistryTrigger(KeletonKernel.getKlink()))
+                        .end()
+        );
+
+        scanner.registerClassAnnotationTriggers(
+                Mountable.class,
+                Pipeline.of(Mountable.class.getCanonicalName())
+                        .then(new MountableVerifyingTrigger())
+                        .then(new MountablePreloadingTrigger())
+                        .then(new MountableRegistryTrigger(XMountAPIProvider.getManager()))
                         .end()
         );
 
