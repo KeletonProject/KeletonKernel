@@ -12,6 +12,7 @@ import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.klink.kernel.XMounter_kernel;
+import org.kucro3.keleton.kernel.klink.kernel.emulation.XMounter_kernel_emulation;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceFailureEvent;
 import org.kucro3.keleton.kernel.module.KeletonModuleManagerImpl;
 import org.kucro3.keleton.kernel.xmount.XMountAPIProvider;
@@ -60,6 +61,7 @@ public class KeletonKernel extends DummyModContainer {
         XMountManagerImpl xmount = XMountAPIProvider.getManager();
         xmount.initialize(klink);
         xmount.putMountable(XMounter_kernel.instance());
+        xmount.putMountable(XMounter_kernel_emulation.instance());
 
         bootstraper = new KeletonBootstraper();
     }
