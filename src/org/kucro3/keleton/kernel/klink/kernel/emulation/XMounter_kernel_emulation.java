@@ -13,6 +13,8 @@ public class XMounter_kernel_emulation implements Mounter {
         ExpressionLibrary lib = klink.getExpressions();
 
         lib.putExpression(File.instance());
+        lib.putExpression(SetRoot.instance());
+        lib.putExpression(SetModules.instance());
     }
 
     @Override
@@ -21,6 +23,8 @@ public class XMounter_kernel_emulation implements Mounter {
         ExpressionLibrary lib = klink.getExpressions();
 
         lib.removeExpression(File.instance().getName());
+        lib.removeExpression(SetRoot.instance().getName());
+        lib.removeExpression(SetModules.instance().getName());
     }
 
     public static LoadedMounter instance()

@@ -1,5 +1,6 @@
 package org.kucro3.keleton.kernel.klink.kernel.emulation;
 
+import org.kucro3.keleton.kernel.emulated.impl.ImmutableFileEmulatedHandle;
 import org.kucro3.klink.Ref;
 import org.kucro3.klink.expression.Expression;
 import org.kucro3.klink.expression.ExpressionCompiler;
@@ -12,7 +13,7 @@ public class File implements ExpressionCompiler.Level1 {
     public ExpressionInstance compile(ExpressionLibrary expressionLibrary, Ref[] refs, Sequence sequence)
     {
         final String path = sequence.leftToString();
-        return (sys, env) -> env.setReturnSlot(new java.io.File(path));
+        return (sys, env) -> env.setReturnSlot(new ImmutableFileEmulatedHandle(new java.io.File(path)));
     }
 
     public static Expression instance()
@@ -20,5 +21,5 @@ public class File implements ExpressionCompiler.Level1 {
         return INSTANCE;
     }
 
-    private static final Expression INSTANCE = new Expression("kernel:emulation:File", new File());
+    private static final Expression INSTANCE = new Expression("kernel:emulation::File", new File());
 }

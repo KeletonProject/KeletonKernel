@@ -1,8 +1,11 @@
 package org.kucro3.keleton.kernel.emulated;
 
 import org.kucro3.keleton.emulated.Emulated;
+import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.kernel.emulated.impl.CustomEmulated;
+import org.kucro3.keleton.kernel.emulated.impl.ImmutableFileEmulatedHandle;
 import org.kucro3.keleton.kernel.emulated.impl.LocalEmulated;
+import org.kucro3.keleton.kernel.emulated.impl.MutableEmulated;
 
 import java.io.File;
 import java.util.Optional;
@@ -22,6 +25,7 @@ import java.util.function.Consumer;
  * Klink Boot File Emulation: (TBC)
  *  -Dkeleton.kernel.emulation=bootfile
  *  -Dkeleton.kernel.emulation.bootfile= BOOT FILE
+ *      => file:%path% Boot from file
  *
  * Net Emulation:
  *  TBC
@@ -55,7 +59,16 @@ public class EmulationInitializer {
         }
         else if(emulationPolicy.equalsIgnoreCase(EMULATION_BOOTFILE))
         {
-            // TBC
+            String boot = requireProperty(PROPERTY_EMULATION_BOOTFILE, properties);
+
+            EmulatedHandle bootFile;
+
+            if(boot.startsWith(SOURCE_FILE))
+                bootFile = new ImmutableFileEmulatedHandle(new File(boot.substring(SOURCE_FILE.length())));
+            else
+                throw new IllegalStateException("Unknown boot source: " + boot);
+
+            consumer.accept(new MutableEmulated(bootFile));
         }
         else
             throw new IllegalStateException("Illegal property: " + PROPERTY_EMULATION + "=" + emulationPolicy);
@@ -66,6 +79,8 @@ public class EmulationInitializer {
         return Optional.ofNullable(properties.getProperty(name))
                 .orElseThrow(() -> new IllegalStateException("Property undefined: " + name));
     }
+
+    private static final String SOURCE_FILE = "file:";
 
     private static final String EMULATION_DEFAULT = "default";
 

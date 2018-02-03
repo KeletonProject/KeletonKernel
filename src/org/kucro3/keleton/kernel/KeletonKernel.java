@@ -30,6 +30,7 @@ import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class KeletonKernel extends DummyModContainer {
     public KeletonKernel() throws Exception
@@ -40,7 +41,7 @@ public class KeletonKernel extends DummyModContainer {
         metadata.modId = "keletonkernel";
         metadata.name = "KeletonKernel";
         metadata.version = "1.0";
-        metadata.authorList = Arrays.asList("Kumonda221");
+        metadata.authorList = Collections.singletonList("Kumonda221");
 
         logger = LoggerFactory.getLogger("keletonkernel");
         manager = new KeletonModuleManagerImpl();

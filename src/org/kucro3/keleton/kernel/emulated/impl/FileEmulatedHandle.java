@@ -155,14 +155,14 @@ public class FileEmulatedHandle implements EmulatedHandle {
     }
 
     @Override
-    public void create() throws IOException
+    public boolean create() throws IOException
     {
-        file.createNewFile();
+        return file.createNewFile();
     }
 
-    private final File root;
+    protected final File root;
 
-    private final File file;
+    protected final File file;
 
     private final boolean canDelete;
 
