@@ -8,19 +8,15 @@ import org.kucro3.klink.expression.ExpressionLibrary;
 
 public class XMounter_kernel implements Mounter {
     @Override
-    public void mount(Klink klink)
+    public void mount(ExpressionLibrary lib)
     {
-        ExpressionLibrary lib = klink.getExpressions();
-
         lib.putExpression(IgnoreModule.instance());
         lib.putExpression(ScanModules.instance());
     }
 
     @Override
-    public void unmount(Klink klink)
+    public void unmount(ExpressionLibrary lib)
     {
-        ExpressionLibrary lib = klink.getExpressions();
-
         lib.removeExpression(IgnoreModule.instance().getName());
         lib.removeExpression(ScanModules.instance().getName());
     }

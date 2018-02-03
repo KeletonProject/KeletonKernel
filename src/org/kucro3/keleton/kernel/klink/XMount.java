@@ -32,14 +32,14 @@ public class XMount implements ExpressionCompiler.Level1 {
             XMountManager manager = XMountAPIProvider.getManager();
             LoadedMounter mounter = unmount ?
                     manager.getMounted(name)
-                        .orElseThrow(() -> new ScriptException("No such mounted object: \"" + name + "\""))
-                :   manager.getMountable(name)
-                        .orElseThrow(() -> new ScriptException("No such mountable object: \"" + name + "\" (Not found or already mounted)"));
+                            .orElseThrow(() -> new ScriptException("No such mounted object: \"" + name + "\""))
+                    : manager.getMountable(name)
+                    .orElseThrow(() -> new ScriptException("No such mountable object: \"" + name + "\" (Not found or already mounted)"));
 
-            if(unmount)
-                mounter.unmount(sys);
+            if (unmount)
+                mounter.unmount(expressionLibrary);
             else
-                mounter.mount(sys);
+                mounter.mount(expressionLibrary);
         };
     }
 

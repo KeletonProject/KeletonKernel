@@ -19,6 +19,7 @@ import org.kucro3.keleton.kernel.xmount.XMountAPIProvider;
 import org.kucro3.keleton.kernel.xmount.XMountManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.klink.CompileMode;
 import org.kucro3.klink.Environment;
 import org.kucro3.klink.Klink;
 import org.kucro3.klink.functional.KlinkFunctionRegistry;
@@ -55,6 +56,8 @@ public class KeletonKernel extends DummyModContainer {
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");
         runtimeEnv = klink.createEnv("RUNTIME");
+
+        klink.setCompileMode(CompileMode.FIRST_EXECUTE);
 
         klink.provideService(KlinkFunctionRegistry.class, new KlinkFunctionRegistry());
         klink.provideService(NativeFunctionRegistry.class, new NativeFunctionRegistry());

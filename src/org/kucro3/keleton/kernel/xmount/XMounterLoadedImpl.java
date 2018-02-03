@@ -4,6 +4,7 @@ import org.kucro3.keleton.klink.xmount.LoadedMounter;
 import org.kucro3.keleton.klink.xmount.Mountable;
 import org.kucro3.keleton.klink.xmount.Mounter;
 import org.kucro3.klink.Klink;
+import org.kucro3.klink.expression.ExpressionLibrary;
 
 import java.util.Objects;
 
@@ -36,22 +37,22 @@ public class XMounterLoadedImpl implements LoadedMounter {
     }
 
     @Override
-    public void mount(Klink klink)
+    public void mount(ExpressionLibrary lib)
     {
         if(mounted)
             throw new IllegalStateException("Already mounted");
 
-        mounter.mount(klink);
+        mounter.mount(lib);
         mounted = true;
     }
 
     @Override
-    public void unmount(Klink klink)
+    public void unmount(ExpressionLibrary lib)
     {
         if(!mounted)
             throw new IllegalStateException("Not mounted yet");
 
-        mounter.unmount(klink);
+        mounter.unmount(lib);
         mounted = false;
     }
 
