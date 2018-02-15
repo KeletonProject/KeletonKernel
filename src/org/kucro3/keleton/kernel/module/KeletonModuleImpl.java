@@ -7,6 +7,9 @@ import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class KeletonModuleImpl implements KeletonModule {
@@ -17,6 +20,78 @@ public class KeletonModuleImpl implements KeletonModule {
         this.info = info;
         this.state = State.MOUNTED;
         this.url = url;
+    }
+
+    @Override
+    public String getId()
+    {
+        return this.info.id();
+    }
+
+    @Override
+    public Set<String> getDependencies()
+    {
+        return new HashSet<>(Arrays.asList(this.info.dependencies()));
+    }
+
+    @Override
+    public KeletonInstance getInstance()
+    {
+        return this.instance;
+    }
+
+    @Override
+    public boolean supportDisabling()
+    {
+        return this.info.supportDisabling();
+    }
+
+    @Override
+    public State getState()
+    {
+        return this.state;
+    }
+
+    @Override
+    public EmulatedHandle getSource()
+    {
+        return this.source;
+    }
+
+    @Override
+    public URL getResourceURL()
+    {
+        return this.url;
+    }
+
+    @Override
+    public void load()
+    {
+
+    }
+
+    @Override
+    public void enable()
+    {
+
+    }
+
+    @Override
+    public void disable()
+    {
+
+    }
+
+    @Override
+    public void destroy()
+    {
+
+    }
+
+    @Override
+    public void escapeState(State state)
+    {
+
     }
 
     boolean touchState(State state)
@@ -79,8 +154,6 @@ public class KeletonModuleImpl implements KeletonModule {
     private final EmulatedHandle source;
 
     private final URL url;
-
-    private final Object lock = new Object();
 
     static interface DisablingCallback
     {
