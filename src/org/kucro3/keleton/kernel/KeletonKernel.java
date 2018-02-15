@@ -7,7 +7,6 @@ import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.*;
-import org.kucro3.keleton.Keleton;
 import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.kernel.api.KeletonAPIManagerImpl;
 import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
@@ -30,7 +29,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class KeletonKernel extends DummyModContainer {

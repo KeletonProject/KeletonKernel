@@ -27,12 +27,6 @@ public class KernelAPIProvider {
         return KeletonKernel.getModuleManagerImpl();
     }
 
-    @ExportAPI(name = "GetKernelFenceEstablisher")
-    public static KeletonModule.FenceEstablisher GetKernelFenceEstablisher()
-    {
-        return KERNEL_FENCE_ESTABLISHER;
-    }
-
     @ExportAPI(name = "GetKernelKlinkInstance")
     public static Klink GetKernelKlinkInstance()
     {
@@ -44,6 +38,4 @@ public class KernelAPIProvider {
     {
         return KeletonKernel.getRuntimeEnv();
     }
-
-    private static final KeletonModule.FenceEstablisher KERNEL_FENCE_ESTABLISHER = () -> "keletonkernel";
 }
