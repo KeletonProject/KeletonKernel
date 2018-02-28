@@ -65,25 +65,45 @@ public class KeletonModuleImpl implements KeletonModule {
     }
 
     @Override
-    public void load()
+    public boolean load()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean enable()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean disable()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean destroy()
+    {
+        return false;
+    }
+
+    void load0()
     {
 
     }
 
-    @Override
-    public void enable()
+    void enable0()
     {
 
     }
 
-    @Override
-    public void disable()
+    void disable0()
     {
 
     }
 
-    @Override
-    public void destroy()
+    void destroy0()
     {
 
     }
@@ -98,9 +118,6 @@ public class KeletonModuleImpl implements KeletonModule {
     {
         switch(this.state)
         {
-            case FENCED:
-                return false;
-
             case MOUNTED:
             case DESTROYED:
             case FAILED:
@@ -158,10 +175,5 @@ public class KeletonModuleImpl implements KeletonModule {
     static interface DisablingCallback
     {
         void onDisable(KeletonModuleImpl module) throws KeletonModuleException;
-    }
-
-    static interface ActionFunction
-    {
-        CompletableFuture<Void> get() throws Exception;
     }
 }

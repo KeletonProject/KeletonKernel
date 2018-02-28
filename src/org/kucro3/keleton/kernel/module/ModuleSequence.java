@@ -138,25 +138,25 @@ public class ModuleSequence {
     public void loadAll()
     {
         for(KeletonModuleImpl impl : sequence)
-            impl.load();
+            impl.load0();
     }
 
     public void enableAll()
     {
         for(KeletonModuleImpl impl : sequence)
-            impl.enable();
+            impl.enable0();
     }
 
     public void disableAll()
     {
         for(int i = sequence.size() - 1; i >= 0; i--)
-            sequence.get(i).disable();
+            sequence.get(i).disable0();
     }
 
     public void destroyAll()
     {
         for(int i = sequence.size() - 1; i >= 0; i--)
-            sequence.get(i).destroy();
+            sequence.get(i).destroy0();
     }
 
     public KeletonModuleImpl getModule(String id)
