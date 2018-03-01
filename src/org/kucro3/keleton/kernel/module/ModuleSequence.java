@@ -16,7 +16,6 @@ public class ModuleSequence {
 
         for(KeletonModuleImpl impl : modules)
         {
-            impl.bind(this);
             impl.callback = this::checkDependedAndRemove;
 
             if(this.modules.put(impl.getId(), impl) != null)
