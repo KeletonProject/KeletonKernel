@@ -5,12 +5,13 @@ import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
+import org.kucro3.keleton.module.security.ModuleStateTransformingPermission;
+import org.kucro3.keleton.security.ModuleAccessControl;
 
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class KeletonModuleImpl implements KeletonModule {
     public KeletonModuleImpl(EmulatedHandle source, URL url, KeletonInstance instance, Module info)
@@ -67,51 +68,66 @@ public class KeletonModuleImpl implements KeletonModule {
     @Override
     public boolean load()
     {
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.LOADED));
+
         return false;
     }
 
     @Override
     public boolean enable()
     {
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.ENABLED));
+
         return false;
     }
 
     @Override
     public boolean disable()
     {
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.DISABLED));
+
         return false;
     }
 
     @Override
     public boolean destroy()
     {
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.DESTROYED));
+
         return false;
     }
 
     void load0()
     {
-
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.LOADED));
     }
 
     void enable0()
     {
-
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.ENABLED));
     }
 
     void disable0()
     {
-
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.DISABLED));
     }
 
     void destroy0()
     {
-
+        ModuleAccessControl.checkPermission(
+                new ModuleStateTransformingPermission(State.DESTROYED));
     }
 
     @Override
     public void escapeState(State state)
     {
-
     }
 
     boolean touchState(State state)
