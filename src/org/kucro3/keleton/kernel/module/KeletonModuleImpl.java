@@ -105,29 +105,49 @@ public class KeletonModuleImpl implements KeletonModule {
     {
         ModuleAccessControl.checkPermission(
                 new ModuleStateTransformingPermission(State.LOADED));
+
+        transform(State.LOADED, instance::onLoad);
     }
 
     void enable0()
     {
         ModuleAccessControl.checkPermission(
                 new ModuleStateTransformingPermission(State.ENABLED));
+
+        transform(State.ENABLED, instance::onEnable);
     }
 
     void disable0()
     {
         ModuleAccessControl.checkPermission(
                 new ModuleStateTransformingPermission(State.DISABLED));
+
+        transform(State.DISABLED, () -> {
+            DisablingCallback callback = this.callback;
+            if(callback != null)
+                callback.onDisable(this);
+
+            instance.onDisable();
+        });
     }
 
     void destroy0()
     {
         ModuleAccessControl.checkPermission(
                 new ModuleStateTransformingPermission(State.DESTROYED));
+
+        transform(State.DESTROYED, instance::onDestroy);
+    }
+
+    private synchronized void transform(State to, ExceptionalAction action)
+    {
+
     }
 
     @Override
     public void escapeState(State state)
     {
+        while(!this.state.equals(state));
     }
 
     boolean touchState(State state)
@@ -187,6 +207,11 @@ public class KeletonModuleImpl implements KeletonModule {
     private final EmulatedHandle source;
 
     private final URL url;
+
+    static interface ExceptionalAction
+    {
+        void act() throws Exception;
+    }
 
     static interface DisablingCallback
     {

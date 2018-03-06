@@ -2,6 +2,8 @@ package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.keleton.module.security.ModuleStateTransformationCancellingPermission;
+import org.kucro3.keleton.security.ModuleAccessControl;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 
@@ -86,6 +88,9 @@ abstract class StateTransformationEventImpl implements KeletonModuleEvent.StateT
         @Override
         public void setCancelled(boolean cancel)
         {
+            ModuleAccessControl.checkPermission(
+                    new ModuleStateTransformationCancellingPermission());
+
             this.cancelled = cancel;
             if(!cancel)
                 this.cause = null;
