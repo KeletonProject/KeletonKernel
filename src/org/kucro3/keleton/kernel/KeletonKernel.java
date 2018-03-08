@@ -18,6 +18,7 @@ import org.kucro3.keleton.kernel.xmount.XMountAPIProvider;
 import org.kucro3.keleton.kernel.xmount.XMountManagerImpl;
 import org.kucro3.keleton.module.event.KeletonLoaderEvent;
 import org.kucro3.keleton.module.event.KeletonModuleEvent;
+import org.kucro3.keleton.security.Sealed;
 import org.kucro3.klink.CompileMode;
 import org.kucro3.klink.Environment;
 import org.kucro3.klink.Klink;
@@ -31,6 +32,7 @@ import org.spongepowered.api.event.Event;
 
 import java.util.Collections;
 
+@Sealed
 public class KeletonKernel extends DummyModContainer {
     public KeletonKernel() throws Exception
     {

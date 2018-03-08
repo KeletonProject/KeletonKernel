@@ -22,6 +22,7 @@ import org.kucro3.keleton.kernel.xmount.trigger.MountableVerifyingTrigger;
 import org.kucro3.keleton.klink.Library;
 import org.kucro3.keleton.klink.xmount.Mountable;
 import org.kucro3.keleton.module.Module;
+import org.kucro3.keleton.security.Sealed;
 import org.kucro3.klink.Executable;
 import org.kucro3.klink.SequenceUtil;
 import org.kucro3.trigger.Fence;
@@ -29,6 +30,7 @@ import org.kucro3.trigger.Pipeline;
 
 import java.io.IOException;
 
+@Sealed
 public class KeletonBootstraper {
     public KeletonBootstraper()
     {

@@ -4,9 +4,11 @@ import org.kucro3.keleton.exception.KeletonException;
 import org.kucro3.keleton.module.exception.KeletonLoaderException;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.exception.KeletonModuleFunctionException;
+import org.kucro3.keleton.security.Sealed;
 
 import java.util.*;
 
+@Sealed
 public class ModuleSequence {
     public ModuleSequence(Collection<KeletonModuleImpl> modules) throws KeletonException
     {

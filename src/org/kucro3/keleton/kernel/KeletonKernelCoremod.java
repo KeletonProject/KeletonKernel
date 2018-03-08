@@ -1,9 +1,11 @@
 package org.kucro3.keleton.kernel;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.kucro3.keleton.security.Sealed;
 
 import java.util.Map;
 
+@Sealed
 @IFMLLoadingPlugin.MCVersion("1.10.2")
 public class KeletonKernelCoremod implements IFMLLoadingPlugin {
     @Override

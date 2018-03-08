@@ -9,6 +9,7 @@ import org.kucro3.keleton.module.event.KeletonModuleEvent;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.security.ModuleStateTransformingPermission;
 import org.kucro3.keleton.security.ModuleAccessControl;
+import org.kucro3.keleton.security.Sealed;
 import org.spongepowered.api.event.cause.Cause;
 
 import java.net.URL;
@@ -104,6 +105,7 @@ public class KeletonModuleImpl implements KeletonModule {
         return false;
     }
 
+    @Sealed
     void load0()
     {
         ModuleAccessControl.checkPermission(
@@ -112,6 +114,7 @@ public class KeletonModuleImpl implements KeletonModule {
         transform(State.LOADED, instance::onLoad);
     }
 
+    @Sealed
     void enable0()
     {
         ModuleAccessControl.checkPermission(
@@ -120,6 +123,7 @@ public class KeletonModuleImpl implements KeletonModule {
         transform(State.ENABLED, instance::onEnable);
     }
 
+    @Sealed
     void disable0()
     {
         ModuleAccessControl.checkPermission(
@@ -134,6 +138,7 @@ public class KeletonModuleImpl implements KeletonModule {
         });
     }
 
+    @Sealed
     void destroy0()
     {
         ModuleAccessControl.checkPermission(
@@ -142,6 +147,7 @@ public class KeletonModuleImpl implements KeletonModule {
         transform(State.DESTROYED, instance::onDestroy);
     }
 
+    @Sealed
     private synchronized void transform(State to, ExceptionalAction action)
     {
         KeletonModuleEvent.StateTransformation.Pre preEvent =
@@ -242,18 +248,25 @@ public class KeletonModuleImpl implements KeletonModule {
         return true;
     }
 
+    @Sealed
     DisablingCallback callback;
 
+    @Sealed
     ModuleSequence seq;
 
+    @Sealed
     private volatile State state;
 
+    @Sealed
     private final KeletonInstance instance;
 
+    @Sealed
     private final Module info;
 
+    @Sealed
     private final EmulatedHandle source;
 
+    @Sealed
     private final URL url;
 
     static interface ExceptionalAction

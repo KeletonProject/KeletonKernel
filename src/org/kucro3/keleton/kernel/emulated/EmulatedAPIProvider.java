@@ -3,6 +3,8 @@ package org.kucro3.keleton.kernel.emulated;
 import org.kucro3.keleton.api.APIProvider;
 import org.kucro3.keleton.api.ExportAPI;
 import org.kucro3.keleton.emulated.Emulated;
+import org.kucro3.keleton.security.ModuleAccessControl;
+import org.kucro3.keleton.security.Sealed;
 
 import java.util.Objects;
 
@@ -18,6 +20,7 @@ public final class EmulatedAPIProvider {
         return getEmulated();
     }
 
+    @Sealed
     public static void initialize(Emulated emulated)
     {
         if(EmulatedAPIProvider.emulated != null)
@@ -25,10 +28,12 @@ public final class EmulatedAPIProvider {
         EmulatedAPIProvider.emulated = Objects.requireNonNull(emulated);
     }
 
+    @Sealed
     public static Emulated getEmulated()
     {
         return emulated;
     }
 
+    @Sealed
     private static Emulated emulated;
 }
