@@ -1,12 +1,15 @@
 package org.kucro3.keleton.kernel.module;
 
 import org.kucro3.keleton.emulated.EmulatedHandle;
+import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.module.KeletonInstance;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
+import org.kucro3.keleton.module.event.KeletonModuleEvent;
 import org.kucro3.keleton.module.exception.KeletonModuleException;
 import org.kucro3.keleton.module.security.ModuleStateTransformingPermission;
 import org.kucro3.keleton.security.ModuleAccessControl;
+import org.spongepowered.api.event.cause.Cause;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -141,7 +144,54 @@ public class KeletonModuleImpl implements KeletonModule {
 
     private synchronized void transform(State to, ExceptionalAction action)
     {
+        KeletonModuleEvent.StateTransformation.Pre preEvent =
+                new StateTransformationEventImpl.Pre(this, this.state, to, Cause.source(this).build());
 
+        KeletonKernel.postEvent(preEvent);
+
+        if(preEvent.isCancelled())
+        {
+            Cause cause = preEvent.isCancelledWithCause()
+                    ? preEvent.getCancellationCause().get()
+                    : Cause.source(this).build();
+
+            KeletonModuleEvent.StateTransformation.Cancelled cancelledEvent =
+                    new StateTransformationEventImpl.Cancelled(this, this.state, to, cause);
+
+            KeletonKernel.postEvent(cancelledEvent);
+
+            return;
+        }
+
+        if(!touchState(to)) // ignored
+        {
+            KeletonModuleEvent.StateTransformation.Ignored ignoredEvent =
+                    new StateTransformationEventImpl.Ignored(this, this.state, to, Cause.source(this).build()
+                    , "Module \' " + this.getId() + " \' in state \"" + this.state.name() + "\" cannot be transformed to \"" + to.name() + "\"" );
+
+            KeletonKernel.postEvent(ignoredEvent);
+
+            return;
+        }
+
+        try {
+            action.act();
+        } catch (Throwable e) {
+            KeletonModuleEvent.StateTransformation.Failed failedEvent =
+                    new StateTransformationEventImpl.Failed(this, this.state, to, Cause.source(this).build(), e);
+
+            KeletonKernel.postEvent(failedEvent);
+
+            return;
+        }
+
+        State oldState = this.state;
+        this.state = to;
+
+        KeletonModuleEvent.StateTransformation.Transformed succeededEvent =
+                new StateTransformationEventImpl.Transformed(this, oldState, to, Cause.source(this).build());
+
+        KeletonKernel.postEvent(succeededEvent);
     }
 
     @Override
@@ -195,8 +245,6 @@ public class KeletonModuleImpl implements KeletonModule {
     DisablingCallback callback;
 
     ModuleSequence seq;
-
-    volatile State fencedState;
 
     private volatile State state;
 
