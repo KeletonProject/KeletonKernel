@@ -13,6 +13,7 @@ import org.kucro3.keleton.kernel.emulated.EmulatedAPIProvider;
 import org.kucro3.keleton.kernel.klink.kernel.XMounter_kernel;
 import org.kucro3.keleton.kernel.klink.kernel.emulation.XMounter_kernel_emulation;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceFailureEvent;
+import org.kucro3.keleton.kernel.mac.MACAPIProvider;
 import org.kucro3.keleton.kernel.module.KeletonModuleManagerImpl;
 import org.kucro3.keleton.kernel.xmount.XMountAPIProvider;
 import org.kucro3.keleton.kernel.xmount.XMountManagerImpl;
@@ -52,6 +53,7 @@ public class KeletonKernel extends DummyModContainer {
         apimanager.export(KernelAPIManagerProvider.class);
         apimanager.export(EmulatedAPIProvider.class);
         apimanager.export(XMountAPIProvider.class);
+        apimanager.export(MACAPIProvider.class);
 
         klink = new Klink();
         bootEnv = klink.createEnv("BOOT");

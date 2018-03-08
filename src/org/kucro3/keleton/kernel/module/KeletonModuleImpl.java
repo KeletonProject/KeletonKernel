@@ -183,8 +183,11 @@ public class KeletonModuleImpl implements KeletonModule {
         try {
             action.act();
         } catch (Throwable e) {
+            State oldState = this.state;
+            this.state = State.FAILED;
+
             KeletonModuleEvent.StateTransformation.Failed failedEvent =
-                    new StateTransformationEventImpl.Failed(this, this.state, to, Cause.source(this).build(), e);
+                    new StateTransformationEventImpl.Failed(this, oldState, to, Cause.source(this).build(), e);
 
             KeletonKernel.postEvent(failedEvent);
 
