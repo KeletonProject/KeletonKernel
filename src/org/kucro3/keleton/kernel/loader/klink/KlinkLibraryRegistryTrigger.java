@@ -1,9 +1,9 @@
 package org.kucro3.keleton.kernel.loader.klink;
 
+import com.theredpixelteam.redtea.trigger.TerminalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import org.kucro3.klink.Klink;
 import org.kucro3.klink.expression.ExpressionLoader;
-import org.kucro3.trigger.TerminalTrigger;
-import org.kucro3.trigger.TriggerContext;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;

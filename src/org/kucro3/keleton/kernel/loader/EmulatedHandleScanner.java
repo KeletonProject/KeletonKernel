@@ -1,7 +1,10 @@
 package org.kucro3.keleton.kernel.loader;
 
 import com.google.common.eventbus.EventBus;
-import net.minecraft.launchwrapper.Launch;
+import com.theredpixelteam.redtea.trigger.Condition;
+import com.theredpixelteam.redtea.trigger.Pair;
+import com.theredpixelteam.redtea.trigger.Pipeline;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.kernel.io.ClassUtil;
@@ -10,10 +13,6 @@ import org.kucro3.keleton.kernel.loader.event.ModuleResourceDiscoveredEvent;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceFailureEvent;
 import org.kucro3.keleton.kernel.url.URLFactory;
 import org.kucro3.keleton.kernel.url.inmemory.InMemoryResources;
-import org.kucro3.trigger.Condition;
-import org.kucro3.trigger.Pair;
-import org.kucro3.trigger.Pipeline;
-import org.kucro3.trigger.TriggerContext;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;

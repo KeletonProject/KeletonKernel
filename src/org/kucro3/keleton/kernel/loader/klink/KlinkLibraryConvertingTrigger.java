@@ -1,11 +1,10 @@
 package org.kucro3.keleton.kernel.loader.klink;
 
-import org.kucro3.keleton.exception.KeletonInternalException;
+import com.theredpixelteam.redtea.trigger.NormalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import org.kucro3.keleton.kernel.asm.AnnotationUtil;
 import org.kucro3.keleton.kernel.url.inmemory.InMemoryResources;
 import org.kucro3.klink.expression.ExpressionFunction;
-import org.kucro3.trigger.NormalTrigger;
-import org.kucro3.trigger.TriggerContext;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;

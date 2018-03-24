@@ -1,12 +1,12 @@
 package org.kucro3.keleton.kernel.xmount.trigger;
 
+import com.theredpixelteam.redtea.trigger.Gradation;
+import com.theredpixelteam.redtea.trigger.GradationalTrigger;
+import com.theredpixelteam.redtea.trigger.NormalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.klink.xmount.Mountable;
 import org.kucro3.keleton.klink.xmount.Mounter;
-import org.kucro3.trigger.Gradation;
-import org.kucro3.trigger.GradationalTrigger;
-import org.kucro3.trigger.NormalTrigger;
-import org.kucro3.trigger.TriggerContext;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Objects;

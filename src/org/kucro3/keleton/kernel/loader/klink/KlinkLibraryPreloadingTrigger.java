@@ -1,9 +1,8 @@
 package org.kucro3.keleton.kernel.loader.klink;
 
+import com.theredpixelteam.redtea.trigger.NormalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import org.kucro3.keleton.exception.KeletonInternalException;
-import org.kucro3.trigger.NormalTrigger;
-import org.kucro3.trigger.TriggerContext;
 import org.objectweb.asm.tree.ClassNode;
 
 public class KlinkLibraryPreloadingTrigger implements NormalTrigger {

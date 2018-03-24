@@ -1,6 +1,6 @@
 package org.kucro3.keleton.kernel.xmount.trigger;
 
-import org.kucro3.trigger.Gradation;
+import com.theredpixelteam.redtea.trigger.Gradation;
 
 import java.util.Optional;
 

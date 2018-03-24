@@ -1,10 +1,10 @@
 package org.kucro3.keleton.kernel.xmount.trigger;
 
+import com.theredpixelteam.redtea.trigger.TerminalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import org.kucro3.keleton.klink.xmount.Mountable;
 import org.kucro3.keleton.klink.xmount.Mounter;
 import org.kucro3.keleton.klink.xmount.XMountManager;
-import org.kucro3.trigger.TerminalTrigger;
-import org.kucro3.trigger.TriggerContext;
 
 public class MountableRegistryTrigger implements TerminalTrigger {
     public MountableRegistryTrigger(XMountManager manager)

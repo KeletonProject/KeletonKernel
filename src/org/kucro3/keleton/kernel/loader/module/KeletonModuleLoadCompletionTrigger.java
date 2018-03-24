@@ -1,10 +1,10 @@
 package org.kucro3.keleton.kernel.loader.module;
 
+import com.theredpixelteam.redtea.trigger.TerminalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import org.kucro3.keleton.kernel.KeletonKernel;
 import org.kucro3.keleton.module.KeletonModule;
 import org.kucro3.keleton.module.Module;
-import org.kucro3.trigger.TerminalTrigger;
-import org.kucro3.trigger.TriggerContext;
 import org.spongepowered.api.event.cause.Cause;
 
 public class KeletonModuleLoadCompletionTrigger implements TerminalTrigger {

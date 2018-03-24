@@ -1,16 +1,13 @@
 package org.kucro3.keleton.kernel.loader.module;
 
 import com.google.common.eventbus.EventBus;
+import com.theredpixelteam.redtea.trigger.NormalTrigger;
+import com.theredpixelteam.redtea.trigger.TriggerContext;
 import org.kucro3.keleton.kernel.asm.AnnotationUtil;
-import org.kucro3.keleton.kernel.loader.event.ModuleResourceDiscoveredEvent;
 import org.kucro3.keleton.kernel.loader.event.ModuleResourceDuplicationEvent;
 import org.kucro3.keleton.kernel.module.ModuleCollection;
-import org.kucro3.trigger.NormalTrigger;
-import org.kucro3.trigger.TriggerContext;
 import org.objectweb.asm.tree.AnnotationNode;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")

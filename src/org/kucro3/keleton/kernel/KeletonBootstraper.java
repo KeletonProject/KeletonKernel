@@ -1,5 +1,7 @@
 package org.kucro3.keleton.kernel;
 
+import com.theredpixelteam.redtea.trigger.Fence;
+import com.theredpixelteam.redtea.trigger.Pipeline;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.kucro3.keleton.emulated.EmulatedHandle;
 import org.kucro3.keleton.exception.KeletonException;
@@ -25,8 +27,6 @@ import org.kucro3.keleton.module.Module;
 import org.kucro3.keleton.security.Sealed;
 import org.kucro3.klink.Executable;
 import org.kucro3.klink.SequenceUtil;
-import org.kucro3.trigger.Fence;
-import org.kucro3.trigger.Pipeline;
 
 import java.io.IOException;
 
